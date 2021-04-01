@@ -16,7 +16,7 @@ public class Main extends Application {
         primaryStage.setTitle("Sample class");
         FXMLLoader loader = new FXMLLoader(getClass().getResource("sample.fxml"));
         VBox vbox = loader.load();
-        Scene scene = new Scene(vbox);
+        Scene scene = new Scene(vbox, 200, 150);
         primaryStage.setScene(scene);
         primaryStage.show();
     }

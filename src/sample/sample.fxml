@@ -4,6 +4,6 @@
 
 <VBox>
     <children>
-        <Label text="Hello world FXML"/>
+        <Label text="Dzień dobry świat FXML"/>
     </children>
 </VBox>
