@@ -5,7 +5,6 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
-import java.util.concurrent.TimeUnit;
 
 public class BoardView extends VBox {
     board b;
@@ -23,9 +22,9 @@ public class BoardView extends VBox {
         {
             for(int j=0; j<b.width; j++)
             {
-                //if(b.[i][j].obstacle)
-                //    gc.setFill(Color.GRAY);
-                //else
+                if(b.fields[i][j].obstacle)
+                    gc.setFill(Color.GRAY);
+                else
                 gc.setFill(Color.GREEN);
                 gc.fillRect(20*i, 20*j, 20, 20);
                 if(b.fields[i][j].anim!=null)

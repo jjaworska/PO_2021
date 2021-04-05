@@ -15,12 +15,14 @@ public class board {
     public static class field {
         animal anim;
         boolean has_food;
+        boolean obstacle;
         field() {
             this.anim = null;
             has_food = false;
+            obstacle=false;
         }
         boolean is_free() {
-            return anim == null;
+            return anim == null && obstacle == false ;
         }
         @Override
         public String toString() {
@@ -28,6 +30,8 @@ public class board {
                 return String.valueOf(anim.name);
             if(has_food)
                 return "#";
+            if(obstacle)
+                return "@";
             return ".";
         }
     }
@@ -39,7 +43,7 @@ public class board {
     LinkedList<pair> animal_list;
     Random rand;
 
-    board(int height, int width, int animal_count, int food_count) {
+    board(int height, int width, int animal_count, int food_count, int obstacles_count) {
         this.height = height;
         this.width = width;
         this.rand = new Random();
@@ -50,6 +54,10 @@ public class board {
                 fields[x][y] = new field();
 
         animal_list = new LinkedList<>();
+
+        while(obstacles_count-- > 0)
+            generate_obstacle();
+
         while(animal_count-- > 0)
             generate_animal();
 
@@ -57,6 +65,17 @@ public class board {
             generate_food();
 
         //print();
+    }
+    void generate_obstacle(){
+        boolean success = false;
+        while(!success) {
+            int x = rand.nextInt(height);
+            int y = rand.nextInt(width);
+            if(fields[x][y].is_free()) {
+                fields[x][y].obstacle=true;
+                success = true;
+            }
+        }
     }
     void generate_animal() {
         boolean success = false;
@@ -201,7 +220,7 @@ public class board {
     }
 
     public static void main(String[] args) {
-        board test = new board(13, 30, 10, 10);
+        board test = new board(13, 30, 10, 10, 20);
         int cnt = 0;
         while(test.animal_list.size() > 0) {
             test.make_step();

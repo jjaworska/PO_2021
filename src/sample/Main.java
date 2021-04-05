@@ -17,14 +17,13 @@ import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 
-import java.util.concurrent.TimeUnit;
 
 public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         primaryStage.setTitle("Environment");
         //FXMLLoader loader = new FXMLLoader(getClass().getResource("sample.fxml"));
-        board b=new board(15, 20, 10, 10);
+        board b=new board(15, 20, 10, 10, 20);
         BoardView bv=new BoardView(b);
         Scene scene = new Scene(bv, b.height*20, b.width*20);
         primaryStage.setScene(scene);
