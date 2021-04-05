@@ -17,16 +17,20 @@ import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 
+import java.util.concurrent.TimeUnit;
+
 public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
-        primaryStage.setTitle("Sample class");
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("sample.fxml"));
-        VBox vbox = loader.load();
-        vbox.setBackground(new Background(new BackgroundFill(Color.CYAN, CornerRadii.EMPTY, Insets.EMPTY)));
-        Scene scene = new Scene(vbox, 400, 300);
+        primaryStage.setTitle("Environment");
+        //FXMLLoader loader = new FXMLLoader(getClass().getResource("sample.fxml"));
+        board b=new board(15, 20, 10, 10);
+        BoardView bv=new BoardView(b);
+        Scene scene = new Scene(bv, b.height*20, b.width*20);
         primaryStage.setScene(scene);
         primaryStage.show();
+        Simulator simulator = new Simulator (bv);
+        simulator.start();
     }
     public static void main(String[] args) {
         Application.launch(args);

@@ -56,7 +56,7 @@ public class board {
         while(food_count-- > 0)
             generate_food();
 
-        print();
+        //print();
     }
     void generate_animal() {
         boolean success = false;
