@@ -39,6 +39,7 @@ public class board {
     // fields of the board class
     int height;
     int width;
+    public int stepCount = 0;
     field[][] fields;
     LinkedList<pair> animal_list;
     Random rand;
@@ -182,7 +183,7 @@ public class board {
         return false;
     }
 
-    public void make_step() {
+    public boolean make_step() {
         for (Iterator<pair> it = animal_list.iterator(); it.hasNext();) {
             pair p = it.next();
             animal a = field_at(p).anim;
@@ -217,6 +218,8 @@ public class board {
                 it.remove();
             }
         }
+        stepCount++;
+        return animal_list.size() != 0;
     }
 
     public static void main(String[] args) {
