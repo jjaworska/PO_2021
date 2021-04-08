@@ -12,8 +12,11 @@ public class Simulator {
     public Simulator(BoardView boardview)
     {
         this.boardview=boardview;
-        this.boardview.button.setOnAction(actionEvent -> {
+        this.boardview.StartButton.setOnAction(actionEvent -> {
             this.timeline.play();
+        });
+        this.boardview.PauseButton.setOnAction(actionEvent -> {
+            this.timeline.stop();
         });
         this.timeline=new Timeline(new KeyFrame(Duration.millis(200), this::step));
         this.timeline.setCycleCount(Timeline.INDEFINITE);

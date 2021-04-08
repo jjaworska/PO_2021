@@ -13,16 +13,18 @@ import javafx.scene.paint.Color;
 public class BoardView extends VBox {
     board b;
     public Canvas canvas;
-    public Button button;
+    public Button StartButton;
+    public Button PauseButton;
     public BoardView(board b)
     {
         this.b=b;
         setAlignment(Pos.CENTER);
         setPadding(new Insets(20, 20, 20, 20));
         setSpacing(20);
-        this.button=new Button("Start!");
+        this.StartButton=new Button("Start!");
+        this.PauseButton=new Button("Pause!");
         this.canvas=new Canvas(b.height*20, b.width*20);
-        this.getChildren().addAll(this.canvas, this.button);
+        this.getChildren().addAll(this.canvas, this.StartButton, this.PauseButton);
     }
     public void draw()
     {
@@ -39,7 +41,7 @@ public class BoardView extends VBox {
                 if(b.fields[i][j].anim!=null)
                 {
                     gc.setFill(Color.SADDLEBROWN);
-                    gc.fillRect(20*i+5, 20*j+5, 10, 10);
+                    gc.fillRect(20*i+4, 20*j+4, 12, 12);
                 }
                 else if(b.fields[i][j].has_food)
                 {

@@ -22,12 +22,12 @@ public class Main extends Application {
             public void handle(ActionEvent actionEvent) {
                 // Data validation
                 if(!welcome.getParams(params)) {
-                    Label label = new Label("Invalid data. Please try again\n");
+                    Label label = new Label("Textfields values cannot be null! \n");
                     label.setTextFill(Color.RED);
                     welcome.add(label, 0, 6);
                 }
-                else {
-                    board b = new board(params[0], params[1], params[2], params[4], params[3]);
+                else  {
+                    board b = new board(params[0], params[1], params[2], params[3], params[4]);
                     BoardView bv = new BoardView(b);
                     Scene scene = new Scene(bv);
                     primaryStage.setScene(scene);

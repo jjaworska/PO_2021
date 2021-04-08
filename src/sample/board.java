@@ -22,7 +22,7 @@ public class board {
             obstacle=false;
         }
         boolean is_free() {
-            return anim == null && obstacle == false ;
+            return anim == null && !obstacle;
         }
         @Override
         public String toString() {
