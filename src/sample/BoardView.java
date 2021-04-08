@@ -15,6 +15,7 @@ public class BoardView extends VBox {
     public Canvas canvas;
     public Button StartButton;
     public Button PauseButton;
+    public Button StopButton;
     public BoardView(board b)
     {
         this.b=b;
@@ -22,9 +23,10 @@ public class BoardView extends VBox {
         setPadding(new Insets(20, 20, 20, 20));
         setSpacing(20);
         this.StartButton=new Button("Start!");
-        this.PauseButton=new Button("Pause!");
+        this.PauseButton=new Button("Pause");
+        this.StopButton=new Button("Stop");
         this.canvas=new Canvas(b.height*20, b.width*20);
-        this.getChildren().addAll(this.canvas, this.StartButton, this.PauseButton);
+        this.getChildren().addAll(this.canvas, this.StartButton, this.PauseButton, this.StopButton);
     }
     public void draw()
     {
@@ -52,8 +54,9 @@ public class BoardView extends VBox {
         }
     }
     public void drawEnd() {
-        Label endgame = new Label("Simulation ended after " + this.b.stepCount + " steps");
+        Label endgame = new Label("Simulation ended after " + this.b.stepCount + " steps \n");
+        Label counter = new Label (this.b.animal_list.size() + " animals left");
         this.getChildren().clear();
-        this.getChildren().addAll(endgame);
+        this.getChildren().addAll(endgame, counter);
     }
 }

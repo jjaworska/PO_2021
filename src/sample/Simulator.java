@@ -18,6 +18,10 @@ public class Simulator {
         this.boardview.PauseButton.setOnAction(actionEvent -> {
             this.timeline.stop();
         });
+        this.boardview.StopButton.setOnAction(actionEvent -> {
+            this.timeline.stop();
+            this.boardview.drawEnd();
+        });
         this.timeline=new Timeline(new KeyFrame(Duration.millis(200), this::step));
         this.timeline.setCycleCount(Timeline.INDEFINITE);
     }
