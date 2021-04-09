@@ -35,8 +35,8 @@ public class BoardView extends VBox {
         this.canvas=new Canvas(b.width*20, b.height*20);
         this.scrollpane=new ScrollPane(this.canvas);
         scrollpane.setPrefSize(Math.min(b.width*20, 400), Math.min(b.height*20, 400));
-        if(b.width<=20) scrollpane.vbarPolicyProperty().setValue(ScrollPane.ScrollBarPolicy.NEVER);
-        if(b.height<=20) scrollpane.hbarPolicyProperty().setValue(ScrollPane.ScrollBarPolicy.NEVER);
+        if(b.height<=20) scrollpane.vbarPolicyProperty().setValue(ScrollPane.ScrollBarPolicy.NEVER);
+        if(b.width<=20) scrollpane.hbarPolicyProperty().setValue(ScrollPane.ScrollBarPolicy.NEVER);
         buttons.getChildren().addAll(this.StartButton, this.PauseButton, this.StopButton);
 
         this.getChildren().addAll(this.scrollpane, this.buttons);

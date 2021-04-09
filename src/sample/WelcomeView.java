@@ -57,7 +57,7 @@ public class WelcomeView extends GridPane {
 
             String txt = change.getControlNewText();
 
-            if(txt==""){
+            if(txt.equals("")){
                 return null;
             }
             if (txt.matches("0\\d+")) {
@@ -86,12 +86,12 @@ public class WelcomeView extends GridPane {
         setVgap(10);
         setPadding(new Insets(25, 25, 25, 25));
 
-        Label heightLabel = new Label("Height (between 10 and 30)");
+        Label heightLabel = new Label("Height (between 2 and 100)");
         add(heightLabel, 0, 0);
         heightField = new TextField("10");
         add(heightField, 1, 0);
 
-        Label widthLabel = new Label("Width (between 10 and 30)");
+        Label widthLabel = new Label("Width (between 2 and 100)");
         add(widthLabel, 0, 1);
         widthField = new TextField("10");
         add(widthField, 1, 1);
@@ -111,7 +111,6 @@ public class WelcomeView extends GridPane {
         foodField = new TextField("1");
         add(foodField, 1, 4);
 
-        int area=intvalue(widthField) * intvalue(heightField);
         heightField.setTextFormatter(FormatterCreator(heightField));
         widthField.setTextFormatter(FormatterCreator(widthField));
         animalField.setTextFormatter(FormatterCreator( animalField ));
@@ -128,11 +127,10 @@ public class WelcomeView extends GridPane {
         params[2] = intvalue(animalField);
         params[3] = intvalue(foodField);
         params[4] = intvalue(obstacleField);
-        if(heightField.getText()=="" ||
-                widthField.getText()=="" ||
-                animalField.getText()=="" ||
-                foodField.getText()=="" ||
-                obstacleField.getText()=="") return false;
-        return true;
+        return !heightField.getText().equals("") &&
+                !widthField.getText().equals("") &&
+                !animalField.getText().equals("") &&
+                !foodField.getText().equals("") &&
+                !obstacleField.getText().equals("");
     }
 }
