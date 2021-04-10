@@ -7,12 +7,23 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
 
 public class BoardView extends VBox {
+    static Image[] animal_img = new Image[4];
+    static {
+        animal_img[animal.UP] = new Image(String.valueOf(BoardView.class.getResource("img/up.png")));
+        animal_img[animal.DOWN] = new Image(String.valueOf(BoardView.class.getResource("img/down.png")));
+        animal_img[animal.LEFT] = new Image(String.valueOf(BoardView.class.getResource("img/left.png")));
+        animal_img[animal.RIGHT] = new Image(String.valueOf(BoardView.class.getResource("img/right.png")));
+    }
+    static Image food_img = new Image(String.valueOf(BoardView.class.getResource("img/leaf.png")));
+    static Image obstacle_img = new Image(String.valueOf(BoardView.class.getResource("img/obstacle.png")));
+    static int M = 40;
     board b;
     public Canvas canvas;
     public ScrollPane scrollpane;
@@ -32,11 +43,11 @@ public class BoardView extends VBox {
         this.StartButton=new Button("Start!");
         this.PauseButton=new Button("Pause");
         this.StopButton=new Button("Stop");
-        this.canvas=new Canvas(b.width*20, b.height*20);
+        this.canvas=new Canvas(b.width*M, b.height*M);
         this.scrollpane=new ScrollPane(this.canvas);
-        scrollpane.setPrefSize(Math.min(b.width*20, 400), Math.min(b.height*20, 400));
-        if(b.height<=20) scrollpane.vbarPolicyProperty().setValue(ScrollPane.ScrollBarPolicy.NEVER);
-        if(b.width<=20) scrollpane.hbarPolicyProperty().setValue(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollpane.setPrefSize(Math.min(b.width*M, 400), Math.min(b.height*M, 400));
+        if(b.height<=10) scrollpane.vbarPolicyProperty().setValue(ScrollPane.ScrollBarPolicy.NEVER);
+        if(b.width<=10) scrollpane.hbarPolicyProperty().setValue(ScrollPane.ScrollBarPolicy.NEVER);
         buttons.getChildren().addAll(this.StartButton, this.PauseButton, this.StopButton);
 
         this.getChildren().addAll(this.scrollpane, this.buttons);
@@ -48,20 +59,18 @@ public class BoardView extends VBox {
         {
             for(int j=0; j<b.width; j++)
             {
-                if(b.fields[i][j].obstacle)
-                    gc.setFill(Color.GRAY);
-                else
-                gc.setFill(Color.GREEN);
-                gc.fillRect(20*j, 20*i, 20, 20);
-                if(b.fields[i][j].anim!=null)
-                {
-                    gc.setFill(Color.SADDLEBROWN);
-                    gc.fillRect(20*j+4, 20*i+4, 12, 12);
+                gc.setFill(Color.PALEGREEN);
+                gc.fillRect(M*j, M*i, M, M);
+                if(b.fields[i][j].anim != null) {
+                    gc.drawImage(animal_img[b.fields[i][j].anim.direction], M*j, M*i);
                 }
-                else if(b.fields[i][j].has_food)
-                {
-                    gc.setFill(Color.TOMATO);
-                    gc.fillOval(20*j+5, 20*i+5, 10, 10);
+                else if(b.fields[i][j].has_food) {
+                    gc.drawImage(food_img, M*j, M*i);
+                }
+                if(b.fields[i][j].obstacle) {
+                    /*gc.setFill(Color.GREY);
+                    gc.fillRect(M*j, M*i, M, M);*/
+                    gc.drawImage(obstacle_img, M*j, M*i);
                 }
             }
         }

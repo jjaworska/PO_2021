@@ -1,8 +1,12 @@
 package sample;
 
+import java.util.Random;
+
 public class animal {
     public boolean alive;
-    public char name;
+    public int direction;
+    static int LEFT = 0, RIGHT = 1, UP = 2, DOWN = 3;
+    //public char name;
     static char number = 'A';
     // needs
     public int hunger;
@@ -12,15 +16,17 @@ public class animal {
 
     animal() {
         // constructs an animal with default traits
-        //position = new pair(x, y);
+        Random rg = new Random();
+        direction = rg.nextInt(4);
         hunger = 100;
         sight = 7;
         metabolism_speed = 10;
         alive = true;
-        name = number++;
     }
 
     public boolean step() {
+        Random rg = new Random();
+        direction = rg.nextInt(4);
         hunger -= metabolism_speed;
         if(hunger < 0)
             alive = false;

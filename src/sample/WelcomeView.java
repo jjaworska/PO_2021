@@ -8,7 +8,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.layout.GridPane;
 
-
 public class WelcomeView extends GridPane {
     // WELCOME
     public Button send;

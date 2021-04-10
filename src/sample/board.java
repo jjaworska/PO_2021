@@ -27,7 +27,7 @@ public class board {
         @Override
         public String toString() {
             if(anim != null)
-                return String.valueOf(anim.name);
+                return "A";
             if(has_food)
                 return "#";
             if(obstacle)
@@ -192,18 +192,22 @@ public class board {
                 for (int d = 1; d < a.sight && !moved; d++)
                     for (pair q : neighbourhood(p, d)) {
                         if(q.x < p.x && go_up(p)) {
+                            a.direction = animal.UP;
                             moved = true;
                             break;
                         }
                         if(q.x > p.x && go_down(p)) {
+                            a.direction = animal.DOWN;
                             moved = true;
                             break;
                         }
                         if(q.y > p.y && go_right(p)) {
+                            a.direction = animal.RIGHT;
                             moved = true;
                             break;
                         }
                         if(q.y < p.y && go_left(p)) {
+                            a.direction = animal.LEFT;
                             moved = true;
                             break;
                         }
@@ -213,7 +217,7 @@ public class board {
                         moved = true;
             }
             else {
-                System.out.println("+1 death " + a.name);
+                System.out.println("+1 death");
                 field_at(p).anim = null;
                 it.remove();
             }
