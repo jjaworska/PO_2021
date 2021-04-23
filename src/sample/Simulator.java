@@ -27,7 +27,7 @@ public class Simulator {
     }
     private void step(ActionEvent actionEvent)
     {
-        if(this.boardview.b.make_step())
+        if(this.boardview.b.makeStep())
             this.boardview.draw();
         else {
             this.boardview.drawEnd();
