@@ -16,22 +16,22 @@ import javafx.scene.paint.Color;
 public class BoardView extends VBox {
     static Image[] animal_img = new Image[4];
     static {
-        animal_img[Animal.UP] = new Image(String.valueOf(BoardView.class.getResource("img/up.png")));
-        animal_img[Animal.DOWN] = new Image(String.valueOf(BoardView.class.getResource("img/down.png")));
-        animal_img[Animal.LEFT] = new Image(String.valueOf(BoardView.class.getResource("img/left.png")));
-        animal_img[Animal.RIGHT] = new Image(String.valueOf(BoardView.class.getResource("img/right.png")));
+        animal_img[animal.UP] = new Image(String.valueOf(BoardView.class.getResource("img/up.png")));
+        animal_img[animal.DOWN] = new Image(String.valueOf(BoardView.class.getResource("img/down.png")));
+        animal_img[animal.LEFT] = new Image(String.valueOf(BoardView.class.getResource("img/left.png")));
+        animal_img[animal.RIGHT] = new Image(String.valueOf(BoardView.class.getResource("img/right.png")));
     }
     static Image food_img = new Image(String.valueOf(BoardView.class.getResource("img/leaf.png")));
     static Image obstacle_img = new Image(String.valueOf(BoardView.class.getResource("img/obstacle.png")));
     static int M = 40;
-    Board b;
+    board b;
     public Canvas canvas;
     public ScrollPane scrollpane;
     public HBox buttons;
     public Button StartButton;
     public Button PauseButton;
     public Button StopButton;
-    public BoardView(Board b)
+    public BoardView(board b)
     {
         this.b=b;
         setAlignment(Pos.CENTER);
@@ -61,32 +61,23 @@ public class BoardView extends VBox {
             {
                 gc.setFill(Color.PALEGREEN);
                 gc.fillRect(M*j, M*i, M, M);
-                if(b.fields[i][j].animal != null) {
-                    drawAnimal(b.fields[i][j].animal, M*j, M*i);
-                    //gc.drawImage(animal_img[b.fields[i][j].animal.direction], M*j, M*i);
+                if(b.fields[i][j].anim != null) {
+                    gc.drawImage(animal_img[b.fields[i][j].anim.direction], M*j, M*i);
                 }
-                else if(b.fields[i][j].hasFood) {
+                else if(b.fields[i][j].has_food) {
                     gc.drawImage(food_img, M*j, M*i);
                 }
                 if(b.fields[i][j].obstacle) {
+                    /*gc.setFill(Color.GREY);
+                    gc.fillRect(M*j, M*i, M, M);*/
                     gc.drawImage(obstacle_img, M*j, M*i);
                 }
             }
         }
     }
-
-    public void drawAnimal(Animal a, int x, int y) {
-        GraphicsContext gc=this.canvas.getGraphicsContext2D();
-        gc.setFill(Color.WHITE);
-        if(a.isEgg())
-            gc.fillOval(x, y, 15, 20);
-        else
-            gc.drawImage(animal_img[a.direction], x, y);
-    }
-
     public void drawEnd() {
         Label endgame = new Label("Simulation ended after " + this.b.stepCount + " steps \n");
-        Label counter = new Label (this.b.animalList.size() + " animals left");
+        Label counter = new Label (this.b.animal_list.size() + " animals left");
         this.getChildren().clear();
         this.getChildren().addAll(endgame, counter);
     }
