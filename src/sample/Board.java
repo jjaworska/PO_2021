@@ -134,7 +134,7 @@ public class Board {
             P.animal = null;
             p.x = q.x; p.y = q.y;
         }
-        if (!a.isYoung() && a.hunger > 80) {
+        if (a.hunger > 80 && !a.isYoung()) {
             // lays an egg with probability fertility%
             if (rand.nextInt(100) < a.fertility) {
                 P.animal = a.getDescendant();

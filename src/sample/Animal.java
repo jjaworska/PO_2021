@@ -35,6 +35,7 @@ public class Animal {
     }
 
     Animal getDescendant() {
+        System.out.println("Descendant came");
         Animal a = new Animal();
         a.direction = rg.nextInt(4);
         a.fertility = mutateValue(this.fertility);
@@ -46,13 +47,13 @@ public class Animal {
     public boolean step() {
         Random rg = new Random();
         age++;
+        //direction = rg.nextInt(4);
+        hunger -= metabolism_speed;
         if(age > minimumLifespan) {
-        // old animals die with increasing probability
+            // old animals die with increasing probability
             if (rg.nextInt(minimumLifespan) + minimumLifespan <= age)
                 alive = false;
         }
-        direction = rg.nextInt(4);
-        hunger -= metabolism_speed;
         if (hunger < 0)
             alive = false;
         return alive;

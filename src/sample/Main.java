@@ -27,7 +27,7 @@ public class Main extends Application {
                     welcome.add(label, 0, 6);
                 }
                 else  {
-                    board b = new board(params[0], params[1], params[2], params[3], params[4]);
+                    Board b = new Board(params[0], params[1], params[2], params[3], params[4]);
                     BoardView bv = new BoardView(b);
                     Scene scene = new Scene(bv);
                     primaryStage.setScene(scene);
