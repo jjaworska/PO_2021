@@ -25,7 +25,7 @@ public class WelcomeView extends GridPane {
     int minvalue (TextField tf){
         if( tf==heightField ){
             if(intvalue(widthField)==0) return 2;
-            int i = (intvalue(foodField) + intvalue(animalField) + intvalue(obstacleField) + intvalue(widthField) -1)/intvalue(widthField);
+            int i = (intvalue(animalField) + intvalue(obstacleField) + intvalue(widthField) -1)/intvalue(widthField);
             return Math.max(i, 2);
         }
         else if( tf==widthField ) {
@@ -33,7 +33,9 @@ public class WelcomeView extends GridPane {
             int i = (intvalue(foodField) + intvalue(animalField) + intvalue(obstacleField) + intvalue(heightField) - 1) / intvalue(heightField);
             return Math.max(i, 2);
         }
-        else if ( tf==(foodField) || tf==(animalField))
+        else if (tf==(animalField))
+            return 1;
+        else if (tf==(foodField))
             return 1;
         else return 0;
     }
@@ -42,10 +44,10 @@ public class WelcomeView extends GridPane {
         if( tf==(heightField) || tf==(widthField) )
             return 100;
         else if ( tf==(foodField) )
-            return area - intvalue(obstacleField) - intvalue(animalField);
+            return 10;
         else if ( tf==(animalField) )
-            return area - intvalue(obstacleField) - intvalue(foodField);
-        else return area - intvalue(animalField) - intvalue(foodField);
+            return area - intvalue(obstacleField);
+        else return area - intvalue(animalField);
     }
     private TextFormatter <Integer>  FormatterCreator(TextField tf){
         return new TextFormatter<>(change -> {
@@ -105,9 +107,9 @@ public class WelcomeView extends GridPane {
         obstacleField = new TextField("0");
         add(obstacleField, 1, 3);
 
-        Label foodLabel = new Label("Number of food portions (>0)");
+        Label foodLabel = new Label("food spawning frequency  (1-10)");
         add(foodLabel, 0, 4);
-        foodField = new TextField("1");
+        foodField = new TextField("4");
         add(foodField, 1, 4);
 
         heightField.setTextFormatter(FormatterCreator(heightField));

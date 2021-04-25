@@ -13,16 +13,26 @@ public class Board {
         }
     }
     public static class Field {
+        Random rand;
+        int foodFrequency;
         Animal animal;
         boolean hasFood;
         boolean obstacle;
-        Field() {
+        Field(Random rand, int foodFrequency) {
+            this.rand=rand;
+            this.foodFrequency = foodFrequency;
             this.animal = null;
             hasFood = false;
             obstacle=false;
         }
         boolean isFree() {
             return animal == null && !obstacle;
+        }
+        void generateFood(){
+            if(isFree() && !hasFood){
+                int x = rand.nextInt(foodFrequency);
+                if(x == 1) hasFood = true;
+            }
         }
     }
 
@@ -35,7 +45,7 @@ public class Board {
     LinkedList<Pair> animalsToAdd;
     Random rand;
 
-    Board(int height, int width, int animalCount, int foodCount, int obstaclesCount) {
+    Board(int height, int width, int animalCount, int foodFrequency, int obstaclesCount) {
         this.height = height;
         this.width = width;
         this.rand = new Random();
@@ -43,7 +53,7 @@ public class Board {
         fields = new Field[height][width];
         for (int x = 0; x < height; x++)
             for (int y = 0; y < width; y++)
-                fields[x][y] = new Field();
+                fields[x][y] = new Field(rand, 300 - 25*foodFrequency);
 
         animalsToAdd = new LinkedList<>();
         animalList = new LinkedList<>();
@@ -53,9 +63,6 @@ public class Board {
 
         while (animalCount-- > 0)
             generateAnimal();
-
-        while (foodCount-- > 0)
-            generateFood();
     }
 
     // Three similar functions used in constructor
@@ -78,17 +85,6 @@ public class Board {
             if (fields[x][y].isFree()) {
                 fields[x][y].animal = new Animal();
                 animalList.add(new Pair(x, y));
-                success = true;
-            }
-        }
-    }
-    void generateFood() {
-        boolean success = false;
-        while (!success) {
-            int x = rand.nextInt(height);
-            int y = rand.nextInt(width);
-            if (fields[x][y].isFree() && !fields[x][y].hasFood) {
-                fields[x][y].hasFood = true;
                 success = true;
             }
         }
@@ -124,16 +120,11 @@ public class Board {
         if (Q.hasFood) {
             a.hunger = 100;
             Q.hasFood = false;
-            Q.animal = a;
-            P.animal = null;
-            p.x = q.x; p.y = q.y;
-            generateFood();
         }
-        else {
-            Q.animal = a;
-            P.animal = null;
-            p.x = q.x; p.y = q.y;
-        }
+        Q.animal = a;
+        P.animal = null;
+        p.x = q.x;
+        p.y = q.y;
         if (a.hunger > 80 && !a.isYoung()) {
             // lays an egg with probability fertility%
             if (rand.nextInt(100) < a.fertility) {
@@ -177,6 +168,9 @@ public class Board {
     }
 
     public boolean makeStep() {
+        for (int x = 0; x < height; x++)
+            for (int y = 0; y < width; y++)
+                fields[x][y].generateFood();
         for (Iterator<Pair> it = animalList.iterator(); it.hasNext();) {
             Pair p = it.next();
             Animal a = fieldAt(p).animal;
@@ -217,7 +211,7 @@ public class Board {
                     // try to move in a random direction
                     // preferably go ahead and not backwards
 
-                    List<Integer> dirs = new ArrayList<Integer>();
+                    List<Integer> dirs = new ArrayList<>();
                     dirs.add(a.direction);
                     for (int i = 0; i < 4; i++)
                         if (i != a.direction && i != 3 - a.direction)
@@ -228,20 +222,28 @@ public class Board {
                     while (!moved && itDirs.hasNext()) {
                         switch (itDirs.next()) {
                             case Animal.UP:
-                                if (goUp(p))
+                                if (goUp(p)) {
                                     moved = true;
+                                    a.direction = Animal.UP;
+                                }
                                 break;
                             case Animal.DOWN:
-                                if (goDown(p))
+                                if (goDown(p)){
                                     moved = true;
+                                    a.direction = Animal.DOWN;
+                                }
                                 break;
                             case Animal.LEFT:
-                                if (goLeft(p))
+                                if (goLeft(p)){
                                     moved = true;
+                                    a.direction = Animal.LEFT;
+                                }
                                 break;
                             case Animal.RIGHT:
-                                if (goRight(p))
+                                if (goRight(p)){
                                     moved = true;
+                                    a.direction = Animal.RIGHT;
+                                }
                                 break;
                         }
                     }

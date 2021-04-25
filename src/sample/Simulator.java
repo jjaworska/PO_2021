@@ -3,21 +3,16 @@ package sample;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
-import javafx.scene.Scene;
 import javafx.util.Duration;
 
 public class Simulator {
     private Timeline timeline;
-    private BoardView boardview;
+    private final BoardView boardview;
     public Simulator(BoardView boardview)
     {
         this.boardview=boardview;
-        this.boardview.StartButton.setOnAction(actionEvent -> {
-            this.timeline.play();
-        });
-        this.boardview.PauseButton.setOnAction(actionEvent -> {
-            this.timeline.stop();
-        });
+        this.boardview.StartButton.setOnAction(actionEvent -> this.timeline.play());
+        this.boardview.PauseButton.setOnAction(actionEvent -> this.timeline.stop());
         this.boardview.StopButton.setOnAction(actionEvent -> {
             this.timeline.stop();
             this.boardview.drawEnd();

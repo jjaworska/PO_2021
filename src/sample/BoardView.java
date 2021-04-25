@@ -59,7 +59,7 @@ public class BoardView extends VBox {
         {
             for(int j=0; j<b.width; j++)
             {
-                gc.setFill(Color.PALEGREEN);
+                gc.setFill(Color.YELLOWGREEN);
                 gc.fillRect(M*j, M*i, M, M);
                 if(b.fields[i][j].animal != null) {
                     drawAnimal(b.fields[i][j].animal, M*j, M*i);
