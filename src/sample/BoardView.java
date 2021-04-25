@@ -2,23 +2,26 @@ package sample;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
+
+import java.text.DecimalFormat;
 
 
 public class BoardView {
+    DecimalFormat df = new DecimalFormat("#.##");
     static Image[] animal_img = new Image[4];
     static {
         animal_img[Animal.UP] = new Image(String.valueOf(BoardView.class.getResource("img/up.png")));
@@ -88,9 +91,9 @@ public class BoardView {
             }
         }
         if(b.stepCount % 5 == 0) {
-            sightLabel.setText("sigth: " + b.avgSight);
-            fertilityLabel.setText("fertility: " + b.avgFertility);
-            metabolismSpeedLabel.setText("metabolism speed:\n " + b.avgMetabolism);
+            sightLabel.setText("sigth: " + df.format(b.avgSight));
+            fertilityLabel.setText("fertility: " + df.format(b.avgFertility));
+            metabolismSpeedLabel.setText("metabolism speed:\n " + df.format(b.avgMetabolism));
         }
     }
 
@@ -105,6 +108,18 @@ public class BoardView {
 
     public void drawEnd() {
         Label endgame = new Label("Simulation ended after " + this.b.stepCount + " steps \n");
-        Label counter = new Label (this.b.animalList.size() + " animals left");
+        Label counter = new Label ("Number of animals:\n"+b.starterAnimalCount+" --> "+b.animalList.size());
+        counter.setTextAlignment(TextAlignment.CENTER);
+        fertilityLabel.setText("Evolution of fertility:\n"+df.format(b.starterFertility)+" --> "+df.format(b.avgFertility));
+        fertilityLabel.setTextAlignment(TextAlignment.CENTER);
+        metabolismSpeedLabel.setText("Evolution of metabolism speed:\n"+df.format(b.starterMetabolism)+" --> "+df.format(b.avgMetabolism));
+        metabolismSpeedLabel.setTextAlignment(TextAlignment.CENTER);
+        sightLabel.setText("Evolution of sight:\n"+df.format(b.starterSight)+" --> "+df.format(b.avgSight));
+        sightLabel.setTextAlignment(TextAlignment.CENTER);
+        VBox vb = new VBox();
+        vb.setAlignment(Pos.CENTER);
+        vb.setPadding(new Insets(20, 20, 20, 20));
+        vb.getChildren().addAll(endgame, counter, fertilityLabel, metabolismSpeedLabel, sightLabel);
+        Main.primaryStage.setScene(new Scene(vb));
     }
 }

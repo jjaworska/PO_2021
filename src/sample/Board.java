@@ -8,6 +8,10 @@ public class Board {
     float avgSight;
     float avgFertility;
     float avgMetabolism;
+    float starterSight;
+    float starterFertility;
+    float starterMetabolism;
+    int starterAnimalCount;
     public static class Pair {
         int x; int y;
         Pair(int x, int y) {
@@ -63,7 +67,7 @@ public class Board {
 
         while (obstaclesCount-- > 0)
             generateObstacle();
-
+        starterAnimalCount=animalCount;
         while (animalCount-- > 0)
             generateAnimal();
     }
@@ -174,20 +178,20 @@ public class Board {
         for (int x = 0; x < height; x++)
             for (int y = 0; y < width; y++)
                 fields[x][y].generateFood();
-        avgSight = 0.0f;
-        avgFertility = 0.0f;
-        avgMetabolism = 0.0f;
+        float sumSight = 0.0f;
+        float sumFertility = 0.0f;
+        float sumMetabolism = 0.0f;
         for (Iterator<Pair> it = animalList.iterator(); it.hasNext();) {
             Pair p = it.next();
             Animal a = fieldAt(p).animal;
-            avgSight += a.sight;
-            avgFertility += a.fertility;
-            avgMetabolism += a.metabolismSpeed;
             if (!a.step()) {
                 fieldAt(p).animal = null;
                 it.remove();
                 continue;
             }
+            sumSight += a.sight;
+            sumFertility += a.fertility;
+            sumMetabolism += a.metabolismSpeed;
             if (a.isEgg()) {
                 continue;
             }
@@ -259,11 +263,18 @@ public class Board {
                 }
             }
         }
+        if(animalList.size()!=0) {
+            avgMetabolism = sumMetabolism/animalList.size();
+            avgFertility = sumFertility/animalList.size();
+            avgSight = sumSight/animalList.size();
+        }
 
-        avgMetabolism /= animalList.size();
-        avgFertility /= animalList.size();
-        avgSight /= animalList.size();
-
+        if(stepCount == 0)
+        {
+            starterFertility=avgFertility;
+            starterMetabolism=avgMetabolism;
+            starterSight=avgSight;
+        }
         stepCount++;
         while (!animalsToAdd.isEmpty())
             animalList.add(animalsToAdd.remove());
