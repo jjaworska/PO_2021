@@ -1,5 +1,9 @@
 package sample;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.canvas.Canvas;
@@ -11,9 +15,10 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.util.Duration;
 
 
-public class BoardView extends VBox {
+public class BoardView {
     static Image[] animal_img = new Image[4];
     static {
         animal_img[Animal.UP] = new Image(String.valueOf(BoardView.class.getResource("img/up.png")));
@@ -25,33 +30,36 @@ public class BoardView extends VBox {
     static Image obstacle_img = new Image(String.valueOf(BoardView.class.getResource("img/obstacle.png")));
     static int M = 40;
     Board b;
+    @FXML
     public Canvas canvas;
-    public ScrollPane scrollpane;
-    public HBox buttons;
+    @FXML
     public Button StartButton;
+    @FXML
     public Button PauseButton;
+    @FXML
     public Button StopButton;
-    public BoardView(Board b)
-    {
+    private Timeline timeline;
+    public void init (Board b){
         this.b=b;
-        setAlignment(Pos.CENTER);
-        setPadding(new Insets(20, 20, 20, 20));
-        setSpacing(20);
-        this.buttons=new HBox();
-        buttons.setAlignment(Pos.CENTER);
-        buttons.setSpacing(10);
-        this.StartButton=new Button("Start!");
-        this.PauseButton=new Button("Pause");
-        this.StopButton=new Button("Stop");
-        this.canvas=new Canvas(b.width*M, b.height*M);
-        this.scrollpane=new ScrollPane(this.canvas);
-        scrollpane.setPrefSize(Math.min(b.width*M, 400), Math.min(b.height*M, 400));
-        if(b.height<=10) scrollpane.vbarPolicyProperty().setValue(ScrollPane.ScrollBarPolicy.NEVER);
-        if(b.width<=10) scrollpane.hbarPolicyProperty().setValue(ScrollPane.ScrollBarPolicy.NEVER);
-        buttons.getChildren().addAll(this.StartButton, this.PauseButton, this.StopButton);
-
-        this.getChildren().addAll(this.scrollpane, this.buttons);
+        this.timeline=new Timeline(new KeyFrame(Duration.millis(200), a->{
+            if(b.makeStep())
+                draw();
+            else {
+                drawEnd();
+                timeline.stop();
+            }
+        }));
+        this.canvas.setWidth(b.width*M);
+        this.canvas.setHeight(b.height * M);
+        this.timeline.setCycleCount(Timeline.INDEFINITE);
+        StartButton.setOnAction(actionEvent -> this.timeline.play());
+        PauseButton.setOnAction(actionEvent -> this.timeline.stop());
+        StopButton.setOnAction(actionEvent -> {
+            this.timeline.stop();
+            drawEnd();
+        });
     }
+
     public void draw()
     {
         GraphicsContext gc=this.canvas.getGraphicsContext2D();
@@ -87,7 +95,5 @@ public class BoardView extends VBox {
     public void drawEnd() {
         Label endgame = new Label("Simulation ended after " + this.b.stepCount + " steps \n");
         Label counter = new Label (this.b.animalList.size() + " animals left");
-        this.getChildren().clear();
-        this.getChildren().addAll(endgame, counter);
     }
 }

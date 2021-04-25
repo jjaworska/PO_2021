@@ -1,12 +1,20 @@
 package sample;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
+
+import java.io.IOException;
 
 public class WelcomeView extends GridPane {
     // WELCOME
@@ -16,7 +24,11 @@ public class WelcomeView extends GridPane {
     public TextField animalField;
     public TextField foodField;
     public TextField obstacleField;
+    final int[] params = new int[5];
 
+    {
+
+    }
     int intvalue (TextField tf){
         if(tf.getText().equals(""))
             return 0;
@@ -121,6 +133,32 @@ public class WelcomeView extends GridPane {
 
         send = new Button("set");
         add(send, 0, 5);
+        send.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                // Data validation
+                if (!getParams(params)) {
+                    Label label = new Label("Textfields values cannot be null! \n");
+                    label.setTextFill(Color.RED);
+                    add(label, 0, 6);
+                } else {
+
+                    try{
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("boardview.fxml"));
+                        Parent root = loader.load();
+                        BoardView bv = loader.getController();
+                        Board b = new Board(params[0], params[1], params[2], params[3], params[4]);
+                        bv.init(b);
+                        Scene scene = new Scene(root);
+                        Main.primaryStage.setScene(scene);
+                        Main.primaryStage.show();
+                    }catch(IOException e){
+                        System.out.println("failed");
+                    }
+
+                }
+            }
+        });
     }
     boolean getParams(final int[] params) {
         params[0] = intvalue(heightField);

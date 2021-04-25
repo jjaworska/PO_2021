@@ -8,36 +8,17 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 
 public class Main extends Application {
+    public static Stage primaryStage;
     @Override
     public void start(Stage primaryStage) throws Exception {
+        this.primaryStage = primaryStage;
         primaryStage.setTitle("Environment");
 
         // WELCOME VIEW
-        final int[] params = new int[5];
         WelcomeView welcome = new WelcomeView();
         Scene welcomeScene = new Scene(welcome);
+        this.primaryStage.setScene(welcomeScene);
 
-        welcome.send.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                // Data validation
-                if(!welcome.getParams(params)) {
-                    Label label = new Label("Textfields values cannot be null! \n");
-                    label.setTextFill(Color.RED);
-                    welcome.add(label, 0, 6);
-                }
-                else  {
-                    Board b = new Board(params[0], params[1], params[2], params[3], params[4]);
-                    BoardView bv = new BoardView(b);
-                    Scene scene = new Scene(bv);
-                    primaryStage.setScene(scene);
-                    primaryStage.show();
-                    Simulator simulator = new Simulator(bv);
-                }
-            }
-        });
-
-        primaryStage.setScene(welcomeScene);
         primaryStage.show();
     }
     public static void main(String[] args) {
