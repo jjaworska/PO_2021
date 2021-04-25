@@ -14,15 +14,15 @@ public class Animal {
     // needs
     public int hunger;
     // genes
-    int fertility;
-    int sight;
-    int metabolism_speed; // indicates how fast an animal burns calories
+    float fertility;
+    float sight;
+    float metabolismSpeed; // indicates how fast an animal burns calories
 
-    int mutateValue(int x) {
+    static float mutateValue(float x) {
         float r = rg.nextFloat();
         float min = x * (1.0f - mutationCoefficient);
         float max = x * (1.0f + mutationCoefficient);
-        return Math.round(min + (max - min) * r);
+        return min + (max - min) * r;
     }
 
     Animal() {
@@ -30,7 +30,7 @@ public class Animal {
         this.direction = rg.nextInt(4);
         this.hunger = 100;
         this.sight = mutateValue(7);
-        this.metabolism_speed = mutateValue(10);
+        this.metabolismSpeed = mutateValue(10);
         this.fertility = mutateValue(5);
     }
 
@@ -40,7 +40,7 @@ public class Animal {
         a.direction = rg.nextInt(4);
         a.fertility = mutateValue(this.fertility);
         a.sight = mutateValue(this.sight);
-        a.metabolism_speed = mutateValue(this.metabolism_speed);
+        a.metabolismSpeed = mutateValue(this.metabolismSpeed);
         return a;
     }
 
@@ -48,7 +48,7 @@ public class Animal {
         Random rg = new Random();
         age++;
         //direction = rg.nextInt(4);
-        hunger -= metabolism_speed;
+        hunger -= metabolismSpeed;
         if(age > minimumLifespan) {
             // old animals die with increasing probability
             if (rg.nextInt(minimumLifespan) + minimumLifespan <= age)

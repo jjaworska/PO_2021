@@ -38,6 +38,12 @@ public class BoardView {
     public Button PauseButton;
     @FXML
     public Button StopButton;
+    @FXML
+    public Label fertilityLabel;
+    @FXML
+    public Label metabolismSpeedLabel;
+    @FXML
+    public Label sightLabel;
     private Timeline timeline;
     public void init (Board b){
         this.b=b;
@@ -80,6 +86,11 @@ public class BoardView {
                     gc.drawImage(obstacle_img, M*j, M*i);
                 }
             }
+        }
+        if(b.stepCount % 5 == 0) {
+            sightLabel.setText("sigth: " + b.avgSight);
+            fertilityLabel.setText("fertility: " + b.avgFertility);
+            metabolismSpeedLabel.setText("metabolism speed:\n " + b.avgMetabolism);
         }
     }
 

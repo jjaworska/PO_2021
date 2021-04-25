@@ -5,6 +5,9 @@ import java.util.*;
 import static java.lang.Math.abs;
 
 public class Board {
+    float avgSight;
+    float avgFertility;
+    float avgMetabolism;
     public static class Pair {
         int x; int y;
         Pair(int x, int y) {
@@ -171,9 +174,15 @@ public class Board {
         for (int x = 0; x < height; x++)
             for (int y = 0; y < width; y++)
                 fields[x][y].generateFood();
+        avgSight = 0.0f;
+        avgFertility = 0.0f;
+        avgMetabolism = 0.0f;
         for (Iterator<Pair> it = animalList.iterator(); it.hasNext();) {
             Pair p = it.next();
             Animal a = fieldAt(p).animal;
+            avgSight += a.sight;
+            avgFertility += a.fertility;
+            avgMetabolism += a.metabolismSpeed;
             if (!a.step()) {
                 fieldAt(p).animal = null;
                 it.remove();
@@ -250,6 +259,10 @@ public class Board {
                 }
             }
         }
+
+        avgMetabolism /= animalList.size();
+        avgFertility /= animalList.size();
+        avgSight /= animalList.size();
 
         stepCount++;
         while (!animalsToAdd.isEmpty())

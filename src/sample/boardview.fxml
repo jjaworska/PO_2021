@@ -9,15 +9,15 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<SplitPane dividerPositions="0.29797979797979796" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/16" fx:controller="sample.BoardView">
+<SplitPane dividerPositions="0.29797979797979796" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.BoardView">
   <items>
       <StackPane prefHeight="150.0" prefWidth="200.0">
          <children>
             <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0" StackPane.alignment="CENTER">
                <children>
-                  <Label text="toDo" />
-                  <Label text="toDo2" />
-                  <Label text="toDo3" />
+                  <Label fx:id="fertilityLabel" text="fertility" />
+                  <Label fx:id="metabolismSpeedLabel" text="metabolismSpeed" />
+                  <Label fx:id="sightLabel" text="sight" />
                   <Button fx:id="StartButton" mnemonicParsing="false" text="Start!" />
                   <Button fx:id="PauseButton" mnemonicParsing="false" text="Pause" />
                   <Button fx:id="StopButton" mnemonicParsing="false" text="Stop" />
