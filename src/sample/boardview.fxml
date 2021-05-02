@@ -33,7 +33,7 @@
       </StackPane>
       <StackPane prefHeight="150.0" prefWidth="200.0">
          <children>
-            <ScrollPane prefHeight="200.0" prefWidth="200.0" StackPane.alignment="CENTER">
+            <ScrollPane StackPane.alignment="CENTER">
                <content>
                   <Canvas fx:id="canvas" height="200.0" width="200.0" />
                </content>

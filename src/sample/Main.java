@@ -17,6 +17,7 @@ public class Main extends Application {
         // WELCOME VIEW
         WelcomeView welcome = new WelcomeView();
         Scene welcomeScene = new Scene(welcome);
+        welcomeScene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
         this.primaryStage.setScene(welcomeScene);
 
         primaryStage.show();

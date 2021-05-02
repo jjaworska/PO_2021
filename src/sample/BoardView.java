@@ -11,7 +11,6 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
@@ -24,13 +23,13 @@ public class BoardView {
     DecimalFormat df = new DecimalFormat("#.##");
     static Image[] animal_img = new Image[4];
     static {
-        animal_img[Animal.UP] = new Image(String.valueOf(BoardView.class.getResource("img/up.png")));
-        animal_img[Animal.DOWN] = new Image(String.valueOf(BoardView.class.getResource("img/down.png")));
-        animal_img[Animal.LEFT] = new Image(String.valueOf(BoardView.class.getResource("img/left.png")));
-        animal_img[Animal.RIGHT] = new Image(String.valueOf(BoardView.class.getResource("img/right.png")));
+        animal_img[Animal.UP] = new Image(String.valueOf(BoardView.class.getResource("img/UP.png")));
+        animal_img[Animal.DOWN] = new Image(String.valueOf(BoardView.class.getResource("img/DOWN.png")));
+        animal_img[Animal.LEFT] = new Image(String.valueOf(BoardView.class.getResource("img/LEFT.png")));
+        animal_img[Animal.RIGHT] = new Image(String.valueOf(BoardView.class.getResource("img/RIGHT.png")));
     }
-    static Image food_img = new Image(String.valueOf(BoardView.class.getResource("img/leaf.png")));
-    static Image obstacle_img = new Image(String.valueOf(BoardView.class.getResource("img/obstacle.png")));
+    static Image food_img = new Image(String.valueOf(BoardView.class.getResource("img/plant.png")));
+    static Image obstacle_img = new Image(String.valueOf(BoardView.class.getResource("img/obstacle2.png")));
     static int M = 40;
     Board b;
     @FXML
@@ -76,7 +75,7 @@ public class BoardView {
         {
             for(int j=0; j<b.width; j++)
             {
-                gc.setFill(Color.YELLOWGREEN);
+                gc.setFill(Color.rgb(158,200,163));
                 gc.fillRect(M*j, M*i, M, M);
                 if(b.fields[i][j].animal != null) {
                     drawAnimal(b.fields[i][j].animal, M*j, M*i);
@@ -108,18 +107,20 @@ public class BoardView {
 
     public void drawEnd() {
         Label endgame = new Label("Simulation ended after " + this.b.stepCount + " steps \n");
-        Label counter = new Label ("Number of animals:\n"+b.starterAnimalCount+" --> "+b.animalList.size());
+        Label counter = new Label("Number of animals:\n"+b.starterAnimalCount+" --> "+b.animalList.size());
+        Label fertilityFinal = new Label("Evolution of fertility:\n"+df.format(b.starterFertility)+" --> "+df.format(b.avgFertility));
+        Label metabolismSpeedFinal = new Label("Evolution of metabolism speed:\n"+df.format(b.starterMetabolism)+" --> "+df.format(b.avgMetabolism));
+        Label sightFinal = new Label("Evolution of sight:\n"+df.format(b.starterSight)+" --> "+df.format(b.avgSight));
         counter.setTextAlignment(TextAlignment.CENTER);
-        fertilityLabel.setText("Evolution of fertility:\n"+df.format(b.starterFertility)+" --> "+df.format(b.avgFertility));
-        fertilityLabel.setTextAlignment(TextAlignment.CENTER);
-        metabolismSpeedLabel.setText("Evolution of metabolism speed:\n"+df.format(b.starterMetabolism)+" --> "+df.format(b.avgMetabolism));
-        metabolismSpeedLabel.setTextAlignment(TextAlignment.CENTER);
-        sightLabel.setText("Evolution of sight:\n"+df.format(b.starterSight)+" --> "+df.format(b.avgSight));
-        sightLabel.setTextAlignment(TextAlignment.CENTER);
+        fertilityFinal.setTextAlignment(TextAlignment.CENTER);
+        metabolismSpeedFinal.setTextAlignment(TextAlignment.CENTER);
+        sightFinal.setTextAlignment(TextAlignment.CENTER);
         VBox vb = new VBox();
         vb.setAlignment(Pos.CENTER);
         vb.setPadding(new Insets(20, 20, 20, 20));
-        vb.getChildren().addAll(endgame, counter, fertilityLabel, metabolismSpeedLabel, sightLabel);
-        Main.primaryStage.setScene(new Scene(vb));
+        vb.getChildren().addAll(endgame, counter, fertilityFinal, metabolismSpeedFinal, sightFinal);
+        Scene endView = new Scene(vb);
+        endView.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
+        Main.primaryStage.setScene(endView);
     }
 }

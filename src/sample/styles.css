@@ -1,0 +1,26 @@
+/* --bittersweet: #ff6663ff;
+   --dim-gray: #606060ff;
+   --dark-sea-green: #86bb8cff;
+   --lavender-blue: #c6d4ffff;
+   --lavender-blush: #f6e8eaff; */
+
+.root {
+    -fx-background-color: #606060;
+    -fx-text-fill: #F6E8EA;
+    -fx-font-size: 11pt;
+}
+
+.button {
+    -fx-background-color: #86BB8C;
+    -fx-background-radius: 10;
+    -fx-min-width: 60;
+    -fx-padding: 5;
+}
+
+.label {
+    -fx-text-fill: #F6E8EA;
+}
+
+.labelWarning {
+    -fx-text-fill: #ff6663;
+}

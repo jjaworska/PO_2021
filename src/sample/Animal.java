@@ -6,7 +6,7 @@ public class Animal {
     static final int LEFT = 0, UP = 1, DOWN = 2, RIGHT = 3;
     static Random rg = new Random();
     static int minimumLifespan = 40;
-    static float mutationCoefficient = 0.2f;
+    static float mutationCoefficient = 0.1f;
 
     int age = 0;
     boolean alive = true;
@@ -35,7 +35,6 @@ public class Animal {
     }
 
     Animal getDescendant() {
-        System.out.println("Descendant came");
         Animal a = new Animal();
         a.direction = rg.nextInt(4);
         a.fertility = mutateValue(this.fertility);

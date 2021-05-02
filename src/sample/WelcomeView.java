@@ -26,9 +26,6 @@ public class WelcomeView extends GridPane {
     public TextField obstacleField;
     final int[] params = new int[5];
 
-    {
-
-    }
     int intvalue (TextField tf){
         if(tf.getText().equals(""))
             return 0;
@@ -139,20 +136,22 @@ public class WelcomeView extends GridPane {
                 // Data validation
                 if (!getParams(params)) {
                     Label label = new Label("Textfields values cannot be null! \n");
+                    label.getStyleClass().add("labelWarning");
                     label.setTextFill(Color.RED);
                     add(label, 0, 6);
                 } else {
 
-                    try{
+                    try {
                         FXMLLoader loader = new FXMLLoader(getClass().getResource("boardview.fxml"));
                         Parent root = loader.load();
                         BoardView bv = loader.getController();
                         Board b = new Board(params[0], params[1], params[2], params[3], params[4]);
                         bv.init(b);
                         Scene scene = new Scene(root);
+                        scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
                         Main.primaryStage.setScene(scene);
                         Main.primaryStage.show();
-                    }catch(IOException e){
+                    } catch(IOException e){
                         System.out.println("failed");
                     }
 
