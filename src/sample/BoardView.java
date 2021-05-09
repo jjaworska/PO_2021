@@ -6,11 +6,13 @@ import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
@@ -92,7 +94,7 @@ public class BoardView {
         if(b.stepCount % 5 == 0) {
             sightLabel.setText("sigth: " + df.format(b.avgSight));
             fertilityLabel.setText("fertility: " + df.format(b.avgFertility));
-            metabolismSpeedLabel.setText("metabolism speed:\n " + df.format(b.avgMetabolism));
+            metabolismSpeedLabel.setText("metabolism speed:\n" + df.format(b.avgMetabolism));
         }
     }
 
@@ -102,12 +104,18 @@ public class BoardView {
         if(a.isEgg())
             gc.fillOval(x, y, 15, 20);
         else
-            gc.drawImage(animal_img[a.direction], x, y);
+        {
+            ImageView iv = new ImageView(a.species.image);
+            iv.setRotate(a.direction*90);
+            SnapshotParameters params = new SnapshotParameters();
+            params.setFill(Color.rgb(158,200,163));
+            gc.drawImage(iv.snapshot(params, null), x, y);
+        }
     }
 
     public void drawEnd() {
         Label endgame = new Label("Simulation ended after " + this.b.stepCount + " steps \n");
-        Label counter = new Label("Number of animals:\n"+b.starterAnimalCount+" --> "+b.animalList.size());
+        Label counter = new Label("Number of animals:\n"+b.starterAnimalCount+" --> "+b.animalCount);
         Label fertilityFinal = new Label("Evolution of fertility:\n"+df.format(b.starterFertility)+" --> "+df.format(b.avgFertility));
         Label metabolismSpeedFinal = new Label("Evolution of metabolism speed:\n"+df.format(b.starterMetabolism)+" --> "+df.format(b.avgMetabolism));
         Label sightFinal = new Label("Evolution of sight:\n"+df.format(b.starterSight)+" --> "+df.format(b.avgSight));

@@ -3,16 +3,16 @@ package sample;
 import java.util.Random;
 
 public class Animal {
-    static final int LEFT = 0, UP = 1, DOWN = 2, RIGHT = 3;
+    static final int UP = 0, DOWN = 1, RIGHT = 2, LEFT =3;
     static Random rg = new Random();
-    static int minimumLifespan = 40;
     static float mutationCoefficient = 0.1f;
-
+    Species species;
     int age = 0;
     boolean alive = true;
+    Pair position;
     int direction;
     // needs
-    public int hunger;
+    public float hunger;
     // genes
     float fertility;
     float sight;
@@ -25,17 +25,18 @@ public class Animal {
         return min + (max - min) * r;
     }
 
-    Animal() {
-        // constructs an animal with default traits
+    Animal(Species species) {
+        // constructs an animal from specified species
+        this.species=species;
         this.direction = rg.nextInt(4);
-        this.hunger = 100;
-        this.sight = mutateValue(7);
-        this.metabolismSpeed = mutateValue(10);
-        this.fertility = mutateValue(5);
+        this.hunger = species.hunger;
+        this.sight = mutateValue(species.sight);
+        this.metabolismSpeed = mutateValue(species.metabolismSpeed);
+        this.fertility = mutateValue(species.fertility);
     }
 
     Animal getDescendant() {
-        Animal a = new Animal();
+        Animal a = new Animal(this.species);
         a.direction = rg.nextInt(4);
         a.fertility = mutateValue(this.fertility);
         a.sight = mutateValue(this.sight);
@@ -48,21 +49,26 @@ public class Animal {
         age++;
         //direction = rg.nextInt(4);
         hunger -= metabolismSpeed;
-        if(age > minimumLifespan) {
+        if(age > species.minimumLifespan) {
             // old animals die with increasing probability
-            if (rg.nextInt(minimumLifespan) + minimumLifespan <= age)
+            if (rg.nextInt(species.minimumLifespan) + species.minimumLifespan <= age)
                 alive = false;
         }
         if (hunger < 0)
             alive = false;
         return alive;
     }
+    public void addStats() {
+        species.sumSight += this.sight;
+        species.sumFertility += this.fertility;
+        species.sumMetabolism += this.metabolismSpeed;
+    }
 
     public boolean isEgg() {
-        return age * 10 < minimumLifespan;
+        return age * 10 < species.minimumLifespan;
     }
 
     public boolean isYoung() {
-        return !isEgg() && age * 3 < minimumLifespan;
+        return !isEgg() && age * 3 < species.minimumLifespan;
     }
 }

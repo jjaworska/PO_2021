@@ -12,47 +12,17 @@ public class Board {
     float starterFertility;
     float starterMetabolism;
     int starterAnimalCount;
-    public static class Pair {
-        int x; int y;
-        Pair(int x, int y) {
-            this.x = x;
-            this.y = y;
-        }
-    }
-    public static class Field {
-        Random rand;
-        int foodFrequency;
-        Animal animal;
-        boolean hasFood;
-        boolean obstacle;
-        Field(Random rand, int foodFrequency) {
-            this.rand=rand;
-            this.foodFrequency = foodFrequency;
-            this.animal = null;
-            hasFood = false;
-            obstacle=false;
-        }
-        boolean isFree() {
-            return animal == null && !obstacle;
-        }
-        void generateFood(){
-            if(isFree() && !hasFood){
-                int x = rand.nextInt(foodFrequency);
-                if(x == 1) hasFood = true;
-            }
-        }
-    }
+    int animalCount;
 
     // fields of the Board class
     int height;
     int width;
     public int stepCount = 0;
     Field[][] fields;
-    LinkedList<Pair> animalList;
-    LinkedList<Pair> animalsToAdd;
+    LinkedList<Species> speciesList;
     Random rand;
 
-    Board(int height, int width, int animalCount, int foodFrequency, int obstaclesCount) {
+    Board(int height, int width, int foodFrequency, int obstaclesCount) {
         this.height = height;
         this.width = width;
         this.rand = new Random();
@@ -62,14 +32,10 @@ public class Board {
             for (int y = 0; y < width; y++)
                 fields[x][y] = new Field(rand, 300 - 25*foodFrequency);
 
-        animalsToAdd = new LinkedList<>();
-        animalList = new LinkedList<>();
+        speciesList = new LinkedList<>();
 
         while (obstaclesCount-- > 0)
             generateObstacle();
-        starterAnimalCount=animalCount;
-        while (animalCount-- > 0)
-            generateAnimal();
     }
 
     // Three similar functions used in constructor
@@ -84,15 +50,17 @@ public class Board {
             }
         }
     }
-    void generateAnimal() {
-        boolean success = false;
-        while (!success) {
-            int x = rand.nextInt(height);
-            int y = rand.nextInt(width);
-            if (fields[x][y].isFree()) {
-                fields[x][y].animal = new Animal();
-                animalList.add(new Pair(x, y));
-                success = true;
+    void generateAnimals(int number, Species species) {
+        while(number-- >0) {
+            boolean success = false;
+            while (!success) {
+                int x = rand.nextInt(height);
+                int y = rand.nextInt(width);
+                if (fields[x][y].isFree()) {
+                    fields[x][y].animal = new Animal(species);
+                    species.animalList.add(new Pair(x, y));
+                    success = true;
+                }
             }
         }
     }
@@ -122,7 +90,7 @@ public class Board {
         // describes movement of an animal from location p to q
         Field P = fieldAt(p);
         Field Q = fieldAt(q);
-        Pair copyP = new Pair(p.x, p.y);
+        Pair copyP = new Pair(p);
         Animal a = P.animal;
         if (Q.hasFood) {
             a.hunger = 100;
@@ -136,7 +104,7 @@ public class Board {
             // lays an egg with probability fertility%
             if (rand.nextInt(100) < a.fertility) {
                 P.animal = a.getDescendant();
-                animalsToAdd.add(copyP);
+                a.species.descendantsList.add(copyP);
             }
         }
     }
@@ -173,7 +141,6 @@ public class Board {
         }
         return false;
     }
-
     public boolean makeStep() {
         for (int x = 0; x < height; x++)
             for (int y = 0; y < width; y++)
@@ -181,92 +148,98 @@ public class Board {
         float sumSight = 0.0f;
         float sumFertility = 0.0f;
         float sumMetabolism = 0.0f;
-        for (Iterator<Pair> it = animalList.iterator(); it.hasNext();) {
-            Pair p = it.next();
-            Animal a = fieldAt(p).animal;
-            if (!a.step()) {
-                fieldAt(p).animal = null;
-                it.remove();
-                continue;
-            }
-            sumSight += a.sight;
-            sumFertility += a.fertility;
-            sumMetabolism += a.metabolismSpeed;
-            if (a.isEgg()) {
-                continue;
-            }
-            if (!a.isEgg()) {
-                boolean moved = false;
-                for (int d = 1; d < a.sight && !moved; d++)
-                    for (Pair q : findFood(p, d)) {
-                        if (q.x < p.x && goUp(p)) {
-                            a.direction = Animal.UP;
-                            moved = true;
-                            break;
+        animalCount=0;
+        for(Iterator <Species> is= speciesList.iterator(); is.hasNext();) {
+            Species species=is.next();
+            for (Iterator<Pair> it = species.animalList.iterator(); it.hasNext(); ) {
+                Pair p = it.next();
+                Animal a = fieldAt(p).animal;
+                if (!a.step()) {
+                    fieldAt(p).animal = null;
+                    it.remove();
+                    continue;
+                }
+                sumSight += a.sight;
+                sumFertility += a.fertility;
+                sumMetabolism += a.metabolismSpeed;
+                animalCount++;
+                if (a.isEgg()) {
+                    continue;
+                }
+                if (!a.isEgg()) {
+                    boolean moved = false;
+                    for (int d = 1; d < a.sight && !moved; d++)
+                        for (Pair q : findFood(p, d)) {
+                            if (q.x < p.x && goUp(p)) {
+                                a.direction = Animal.UP;
+                                moved = true;
+                                break;
+                            }
+                            if (q.x > p.x && goDown(p)) {
+                                a.direction = Animal.DOWN;
+                                moved = true;
+                                break;
+                            }
+                            if (q.y > p.y && goRight(p)) {
+                                a.direction = Animal.RIGHT;
+                                moved = true;
+                                break;
+                            }
+                            if (q.y < p.y && goLeft(p)) {
+                                a.direction = Animal.LEFT;
+                                moved = true;
+                                break;
+                            }
                         }
-                        if (q.x > p.x && goDown(p)) {
-                            a.direction = Animal.DOWN;
-                            moved = true;
-                            break;
-                        }
-                        if (q.y > p.y && goRight(p)) {
-                            a.direction = Animal.RIGHT;
-                            moved = true;
-                            break;
-                        }
-                        if (q.y < p.y && goLeft(p)) {
-                            a.direction = Animal.LEFT;
-                            moved = true;
-                            break;
-                        }
-                    }
-                if (!moved) {
-                    // try to move in a random direction
-                    // preferably go ahead and not backwards
+                    if (!moved) {
+                        // try to move in a random direction
+                        // preferably go ahead and not backwards
 
-                    List<Integer> dirs = new ArrayList<>();
-                    dirs.add(a.direction);
-                    for (int i = 0; i < 4; i++)
-                        if (i != a.direction && i != 3 - a.direction)
-                            dirs.add(i);
-                    dirs.add(3 - a.direction);
+                        List<Integer> dirs = new ArrayList<>();
+                        dirs.add(a.direction);
+                        for (int i = 0; i < 4; i++)
+                            if (i != a.direction && i != 3 - a.direction)
+                                dirs.add(i);
+                        dirs.add(3 - a.direction);
 
-                    Iterator<Integer> itDirs = dirs.iterator();
-                    while (!moved && itDirs.hasNext()) {
-                        switch (itDirs.next()) {
-                            case Animal.UP:
-                                if (goUp(p)) {
-                                    moved = true;
-                                    a.direction = Animal.UP;
-                                }
-                                break;
-                            case Animal.DOWN:
-                                if (goDown(p)){
-                                    moved = true;
-                                    a.direction = Animal.DOWN;
-                                }
-                                break;
-                            case Animal.LEFT:
-                                if (goLeft(p)){
-                                    moved = true;
-                                    a.direction = Animal.LEFT;
-                                }
-                                break;
-                            case Animal.RIGHT:
-                                if (goRight(p)){
-                                    moved = true;
-                                    a.direction = Animal.RIGHT;
-                                }
-                                break;
+                        Iterator<Integer> itDirs = dirs.iterator();
+                        while (!moved && itDirs.hasNext()) {
+                            switch (itDirs.next()) {
+                                case Animal.UP:
+                                    if (goUp(p)) {
+                                        moved = true;
+                                        a.direction = Animal.UP;
+                                    }
+                                    break;
+                                case Animal.DOWN:
+                                    if (goDown(p)) {
+                                        moved = true;
+                                        a.direction = Animal.DOWN;
+                                    }
+                                    break;
+                                case Animal.LEFT:
+                                    if (goLeft(p)) {
+                                        moved = true;
+                                        a.direction = Animal.LEFT;
+                                    }
+                                    break;
+                                case Animal.RIGHT:
+                                    if (goRight(p)) {
+                                        moved = true;
+                                        a.direction = Animal.RIGHT;
+                                    }
+                                    break;
+                            }
                         }
                     }
                 }
             }
+            species.addDescendants();
         }
-        if(animalList.size()!=0) {
-            avgMetabolism = sumMetabolism/animalList.size();
-            avgFertility = sumFertility/animalList.size();
-            avgSight = sumSight/animalList.size();
+        if(animalCount!=0) {
+            avgMetabolism = sumMetabolism/animalCount;
+            avgFertility = sumFertility/animalCount;
+            avgSight = sumSight/animalCount;
         }
 
         if(stepCount == 0)
@@ -276,9 +249,7 @@ public class Board {
             starterSight=avgSight;
         }
         stepCount++;
-        while (!animalsToAdd.isEmpty())
-            animalList.add(animalsToAdd.remove());
 
-        return !animalList.isEmpty();
+        return animalCount>0;
     }
 }
