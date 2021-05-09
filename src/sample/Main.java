@@ -7,10 +7,12 @@ import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 
+import java.util.List;
+
 public class Main extends Application {
     public static Stage primaryStage;
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
         primaryStage.setTitle("Environment");
 

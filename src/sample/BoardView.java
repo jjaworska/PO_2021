@@ -23,13 +23,6 @@ import java.text.DecimalFormat;
 
 public class BoardView {
     DecimalFormat df = new DecimalFormat("#.##");
-    static Image[] animal_img = new Image[4];
-    static {
-        animal_img[Animal.UP] = new Image(String.valueOf(BoardView.class.getResource("img/UP.png")));
-        animal_img[Animal.DOWN] = new Image(String.valueOf(BoardView.class.getResource("img/DOWN.png")));
-        animal_img[Animal.LEFT] = new Image(String.valueOf(BoardView.class.getResource("img/LEFT.png")));
-        animal_img[Animal.RIGHT] = new Image(String.valueOf(BoardView.class.getResource("img/RIGHT.png")));
-    }
     static Image food_img = new Image(String.valueOf(BoardView.class.getResource("img/plant.png")));
     static Image obstacle_img = new Image(String.valueOf(BoardView.class.getResource("img/obstacle2.png")));
     static int M = 40;
