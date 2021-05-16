@@ -36,12 +36,16 @@ public class BoardView {
     @FXML
     public Button StopButton;
     @FXML
+    public VBox vbox;
+    @FXML
     public Label fertilityLabel;
     @FXML
     public Label metabolismSpeedLabel;
     @FXML
     public Label sightLabel;
+
     private Timeline timeline;
+    private boolean[] isSpeciesExtinct;
     public void init (Board b){
         this.b=b;
         this.timeline=new Timeline(new KeyFrame(Duration.millis(200), a->{
@@ -61,6 +65,19 @@ public class BoardView {
             this.timeline.stop();
             drawEnd();
         });
+
+        int speciesNum = b.speciesList.size();
+        isSpeciesExtinct = new boolean[speciesNum];
+        for (boolean bool : isSpeciesExtinct)
+            bool = false;
+        int cnt = 0;
+        for (Species s : b.speciesList) {
+            vbox.getChildren().add(s.speciesName);
+            s.speciesName.setText("Species " + s.name);
+            vbox.getChildren().add(s.fertilitySpecies);
+            vbox.getChildren().add(s.sightSpecies);
+            vbox.getChildren().add(s.metabolismSpecies);
+        }
     }
 
     public void draw()
@@ -85,9 +102,25 @@ public class BoardView {
             }
         }
         if(b.stepCount % 5 == 0) {
-            sightLabel.setText("sigth: " + df.format(b.avgSight));
-            fertilityLabel.setText("fertility: " + df.format(b.avgFertility));
-            metabolismSpeedLabel.setText("metabolism speed:\n" + df.format(b.avgMetabolism));
+            sightLabel.setText("  sight: " + df.format(b.avgSight));
+            fertilityLabel.setText("  fertility: " + df.format(b.avgFertility));
+            metabolismSpeedLabel.setText("  metabolism speed: " + df.format(b.avgMetabolism));
+            int cnt = 0;
+            for (Species s : b.speciesList) {
+                if(!s.isExtinct()) {
+                    s.fertilitySpecies.setText("  fertility: " + df.format(s.sumFertility / s.animalList.size()));
+                    s.sightSpecies.setText("  sight: " + df.format(s.sumSight / s.animalList.size()));
+                    s.metabolismSpecies.setText("  metabolism speed: " + df.format(s.sumMetabolism / s.animalList.size()));
+                }
+                else if(!isSpeciesExtinct[cnt]) {
+                    vbox.getChildren().remove(s.fertilitySpecies);
+                    vbox.getChildren().remove(s.sightSpecies);
+                    vbox.getChildren().remove(s.metabolismSpecies);
+                    s.speciesName.setText("Species " + s.name + ": DEAD");
+                    isSpeciesExtinct[cnt] = true;
+                }
+                cnt++;
+            }
         }
     }
 
@@ -98,7 +131,8 @@ public class BoardView {
             gc.fillOval(x, y, 15, 20);
         else
         {
-            ImageView iv = new ImageView(a.species.image);
+            //gc.drawImage(a.species.images[a.direction], x, y);
+            ImageView iv = new ImageView(a.species.images);
             iv.setRotate(a.direction*90);
             SnapshotParameters params = new SnapshotParameters();
             params.setFill(Color.rgb(158,200,163));

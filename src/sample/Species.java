@@ -1,5 +1,6 @@
 package sample;
 
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 
 import java.util.LinkedList;
@@ -11,12 +12,17 @@ public class Species {
     float metabolismSpeed;
     int hunger;
     static int minimumLifespan = 40;
-    float sumSight;
-    float sumFertility;
-    float sumMetabolism;
+    float sumSight = 0;
+    float sumFertility = 0;
+    float sumMetabolism = 0;
     LinkedList<Pair> animalList;
     LinkedList<Pair> descendantsList;
-    Image image;
+    Image images;
+    // fields required for BoardView
+    public Label speciesName;
+    public Label fertilitySpecies;
+    public Label sightSpecies;
+    public Label metabolismSpecies;
     public Species()
     {
         animalList=new LinkedList<>();
@@ -25,6 +31,13 @@ public class Species {
         hunger=100;
         fertility=14;
         metabolismSpeed=10;
+        speciesName = new Label("Species");
+        fertilitySpecies = new Label("  fertility");
+        sightSpecies = new Label("  sight");
+        metabolismSpecies = new Label("  metabolism speed");
+    }
+    public boolean isExtinct() {
+        return animalList.isEmpty() && descendantsList.isEmpty();
     }
     public void addDescendants()
     {

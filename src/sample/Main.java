@@ -1,26 +1,22 @@
 package sample;
 
 import javafx.application.Application;
-import javafx.event.*;
-import javafx.scene.paint.*;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
 
-import java.util.List;
 
 public class Main extends Application {
     public static Stage primaryStage;
     @Override
-    public void start(Stage primaryStage) {
-        this.primaryStage = primaryStage;
+    public void start(Stage pS) {
+        primaryStage = pS;
         primaryStage.setTitle("Environment");
 
         // WELCOME VIEW
         WelcomeView welcome = new WelcomeView();
         Scene welcomeScene = new Scene(welcome);
         welcomeScene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
-        this.primaryStage.setScene(welcomeScene);
+        primaryStage.setScene(welcomeScene);
 
         primaryStage.show();
     }

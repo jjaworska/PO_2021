@@ -1,10 +1,7 @@
 package sample;
 
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
@@ -12,12 +9,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 
 public class SpeciesView extends GridPane {
     public static Board board;
+    static int imagesCount = 6;
     int number;
     int image=0;
     public Button previous, next, previousimage, nextimage, ready;
@@ -26,18 +21,20 @@ public class SpeciesView extends GridPane {
     public Canvas canvas;
     WelcomeView wv;
     public void increment() {
-        image=(image+1)%2;
+        image=(image+1)%imagesCount;
         GraphicsContext gc=this.canvas.getGraphicsContext2D();
         gc.clearRect(0, 0, 100, 100);
         gc.drawImage(Images.t[image], 0, 0, 100, 100);
-        species.image=Images.t[image];
+        species.images = Images.t[image];
     }
     public void decrement() {
-        image=(image+2-1)%2;
+        image=(image+imagesCount-1)%imagesCount;
         GraphicsContext gc=this.canvas.getGraphicsContext2D();
         gc.clearRect(0, 0, 100, 100);
         gc.drawImage(Images.t[image], 0, 0, 100, 100);
-        species.image=Images.t[image];
+        species.images = Images.t[image];
+        /*gc.drawImage(Images.t[image][Animal.UP], 0, 0, 100, 100);
+        species.images=Images.t[image];*/
     }
     public SpeciesView(WelcomeView welcomeview, Species species, int i)
     {
@@ -48,7 +45,7 @@ public class SpeciesView extends GridPane {
         canvas=new Canvas(100, 100);
         GraphicsContext gc=this.canvas.getGraphicsContext2D();
         gc.drawImage(Images.t[image], 0, 0, 100, 100);
-        species.image=Images.t[image];
+        species.images=Images.t[image];
         nameField=new TextField("Gatunek "+(number+1));
         fertilityField=new TextField("14");
         fertilityField.setTextFormatter(FloatFormatterCreator(fertilityField));
@@ -56,7 +53,7 @@ public class SpeciesView extends GridPane {
         sightField.setTextFormatter(FloatFormatterCreator(sightField));
         metabolismField=new TextField("14");
         metabolismField.setTextFormatter(FloatFormatterCreator(metabolismField));
-        numberOfAnimals=new TextField("0");
+        numberOfAnimals=new TextField("10");
         numberOfAnimals.setTextFormatter(wv.FormatterCreator(numberOfAnimals));
         previous=new Button("prev");
         previous.setOnAction(actionEvent -> Main.primaryStage.setScene(WelcomeView.scenesList.get((number+WelcomeView.scenesList.size()-1)%WelcomeView.scenesList.size())));
@@ -99,7 +96,6 @@ public class SpeciesView extends GridPane {
             }
 
             String txt = change.getControlNewText();
-
 
             try {
                 float f= Float.parseFloat(txt);

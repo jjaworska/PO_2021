@@ -51,6 +51,7 @@ public class Board {
         }
     }
     void generateAnimals(int number, Species species) {
+        starterAnimalCount += number;
         while(number-- >0) {
             boolean success = false;
             while (!success) {
@@ -145,12 +146,11 @@ public class Board {
         for (int x = 0; x < height; x++)
             for (int y = 0; y < width; y++)
                 fields[x][y].generateFood();
-        float sumSight = 0.0f;
-        float sumFertility = 0.0f;
-        float sumMetabolism = 0.0f;
         animalCount=0;
-        for(Iterator <Species> is= speciesList.iterator(); is.hasNext();) {
-            Species species=is.next();
+        for (Species species : speciesList) {
+            species.sumSight = 0;
+            species.sumFertility = 0;
+            species.sumMetabolism = 0;
             for (Iterator<Pair> it = species.animalList.iterator(); it.hasNext(); ) {
                 Pair p = it.next();
                 Animal a = fieldAt(p).animal;
@@ -159,9 +159,9 @@ public class Board {
                     it.remove();
                     continue;
                 }
-                sumSight += a.sight;
-                sumFertility += a.fertility;
-                sumMetabolism += a.metabolismSpeed;
+                species.sumSight += a.sight;
+                species.sumFertility += a.fertility;
+                species.sumMetabolism += a.metabolismSpeed;
                 animalCount++;
                 if (a.isEgg()) {
                     continue;
@@ -235,6 +235,15 @@ public class Board {
                 }
             }
             species.addDescendants();
+        }
+
+        float sumSight = 0.0f;
+        float sumFertility = 0.0f;
+        float sumMetabolism = 0.0f;
+        for(Species s : speciesList) {
+            sumSight += s.sumSight;
+            sumFertility += s.sumFertility;
+            sumMetabolism += s.sumMetabolism;
         }
         if(animalCount!=0) {
             avgMetabolism = sumMetabolism/animalCount;

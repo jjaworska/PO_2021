@@ -3,7 +3,7 @@ package sample;
 import java.util.Random;
 
 public class Animal {
-    static final int UP = 0, DOWN = 1, RIGHT = 2, LEFT =3;
+    static final int UP = 0, RIGHT = 1, DOWN = 2, LEFT = 3;
     static Random rg = new Random();
     static float mutationCoefficient = 0.1f;
     Species species;

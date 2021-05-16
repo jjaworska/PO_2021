@@ -120,22 +120,22 @@ public class WelcomeView extends GridPane {
 
         Label heightLabel = new Label("Height (between 2 and 100)");
         add(heightLabel, 0, 0);
-        heightField = new TextField("10");
+        heightField = new TextField("20");
         add(heightField, 1, 0);
 
         Label widthLabel = new Label("Width (between 2 and 100)");
         add(widthLabel, 0, 1);
-        widthField = new TextField("10");
+        widthField = new TextField("20");
         add(widthField, 1, 1);
 
         Label animalLabel = new Label("Number of species (1-5)");
         add(animalLabel, 0, 2);
-        speciesField = new TextField("1");
+        speciesField = new TextField("2");
         add(speciesField, 1, 2);
 
         Label obstacleLabel = new Label("Number of obstacles (>=0)");
         add(obstacleLabel, 0, 3);
-        obstacleField = new TextField("0");
+        obstacleField = new TextField("20");
         add(obstacleField, 1, 3);
 
         Label foodLabel = new Label("food spawning frequency  (1-10)");
@@ -169,6 +169,7 @@ public class WelcomeView extends GridPane {
                         Species species=new Species();
                         b.speciesList.add(species);
                         SpeciesView sv=new SpeciesView(WelcomeView.this, species, i);
+                        sv.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
                         scenesList.add(new Scene( sv ));
                         svList.add(sv);
                         i++;
