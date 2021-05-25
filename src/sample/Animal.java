@@ -4,6 +4,8 @@ import java.util.Random;
 
 public class Animal {
     static final int UP = 0, RIGHT = 1, DOWN = 2, LEFT = 3;
+    static final int GENECOUNT = 3;
+    static String[] GENENAME = {"Fertility", "Metabolism speed", "Sight"};
     static Random rg = new Random();
     static float mutationCoefficient = 0.1f;
     Species species;

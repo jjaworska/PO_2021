@@ -162,7 +162,7 @@ public class WelcomeView extends GridPane {
                     label.setTextFill(Color.RED);
                     add(label, 0, 6);
                 } else {
-                    b = new Board(params[0], params[1], params[2], params[3]);
+                    b = new Board(params[0], params[1], params[2], params[3], params[4]);
                     int i=0;
                     while(params[4]-- > 0)
                     {

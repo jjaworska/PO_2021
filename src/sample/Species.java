@@ -6,7 +6,9 @@ import javafx.scene.image.Image;
 import java.util.LinkedList;
 
 public class Species {
-    String name;
+    static int speciesCreated = 0;
+    final int id;
+
     float fertility;
     float sight;
     float metabolismSpeed;
@@ -17,6 +19,9 @@ public class Species {
     float sumMetabolism = 0;
     LinkedList<Pair> animalList;
     LinkedList<Pair> descendantsList;
+    // displayng
+    String name;
+    String chartColor;
     Image images;
     // fields required for BoardView
     public Label speciesName;
@@ -25,6 +30,7 @@ public class Species {
     public Label metabolismSpecies;
     public Species()
     {
+        id = speciesCreated++;
         animalList=new LinkedList<>();
         descendantsList=new LinkedList<>();
         sight=7;

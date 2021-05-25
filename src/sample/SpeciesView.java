@@ -26,6 +26,7 @@ public class SpeciesView extends GridPane {
         gc.clearRect(0, 0, 100, 100);
         gc.drawImage(Images.t[image], 0, 0, 100, 100);
         species.images = Images.t[image];
+        species.chartColor = Images.c[image];
     }
     public void decrement() {
         image=(image+imagesCount-1)%imagesCount;
@@ -33,6 +34,7 @@ public class SpeciesView extends GridPane {
         gc.clearRect(0, 0, 100, 100);
         gc.drawImage(Images.t[image], 0, 0, 100, 100);
         species.images = Images.t[image];
+        species.chartColor = Images.c[image];
         /*gc.drawImage(Images.t[image][Animal.UP], 0, 0, 100, 100);
         species.images=Images.t[image];*/
     }
@@ -46,6 +48,7 @@ public class SpeciesView extends GridPane {
         GraphicsContext gc=this.canvas.getGraphicsContext2D();
         gc.drawImage(Images.t[image], 0, 0, 100, 100);
         species.images=Images.t[image];
+        species.chartColor = Images.c[image];
         nameField=new TextField("Gatunek "+(number+1));
         fertilityField=new TextField("14");
         fertilityField.setTextFormatter(FloatFormatterCreator(fertilityField));

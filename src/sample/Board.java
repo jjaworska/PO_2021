@@ -20,12 +20,23 @@ public class Board {
     public int stepCount = 0;
     Field[][] fields;
     LinkedList<Species> speciesList;
+    LinkedList<LinkedList<Integer>> populationStats;
+    LinkedList<LinkedList<Float>> geneStats;
+
     Random rand;
 
-    Board(int height, int width, int foodFrequency, int obstaclesCount) {
+    Board(int height, int width, int foodFrequency, int obstaclesCount, int speciesCount) {
         this.height = height;
         this.width = width;
         this.rand = new Random();
+
+        geneStats = new LinkedList<>();
+        for (int i = 0; i < Animal.GENECOUNT; i++)
+            geneStats.add(new LinkedList<>());
+        populationStats = new LinkedList<>();
+        for (int i = 0; i < speciesCount; i++) {
+            populationStats.add(new LinkedList<>());
+        }
 
         fields = new Field[height][width];
         for (int x = 0; x < height; x++)

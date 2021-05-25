@@ -17,10 +17,57 @@
     -fx-padding: 5;
 }
 
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-fill: #606060;
+}
+
 .label {
     -fx-text-fill: #F6E8EA;
 }
 
 .labelWarning {
     -fx-text-fill: #ff6663;
+}
+
+.axis {
+    -fx-font-size: 1.4em;
+    -fx-tick-label-fill: #F6E8EA;
+}
+
+.axis-label {
+    -fx-text-fill: #F6E8EA;
+}
+
+.chart {
+    -fx-background-color: #606060;
+}
+
+.chart-title {
+    -fx-text-fill: #F6E8EA;
+    -fx-font-size: 1.6em;
+}
+
+.chart-legend {
+    -fx-text-fill: #606060;
+}
+
+.chart-legend {
+    -fx-background-color: #606060;
+}
+
+/*.chart-legend-item-symbol{
+    -fx-background-radius: 0;
+}
+
+.chart-legend-item{
+    -fx-text-fill: #F6E8EA;
+}*/
+
+.text-area {
+    -fx-text-fill: #F6E8EA;
+    -fx-font-size: 16pt;
 }

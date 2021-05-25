@@ -3,8 +3,8 @@ package sample;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
@@ -15,18 +15,20 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 
+import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.LinkedList;
+import java.util.ListIterator;
 
 
 public class BoardView {
-    DecimalFormat df = new DecimalFormat("#.##");
+    static DecimalFormat df = new DecimalFormat("#.##");
     static Image food_img = new Image(String.valueOf(BoardView.class.getResource("img/plant.png")));
     static Image obstacle_img = new Image(String.valueOf(BoardView.class.getResource("img/obstacle2.png")));
     static int M = 40;
-    Board b;
+    static Board b;
     @FXML
     public Canvas canvas;
     @FXML
@@ -105,22 +107,45 @@ public class BoardView {
             sightLabel.setText("  sight: " + df.format(b.avgSight));
             fertilityLabel.setText("  fertility: " + df.format(b.avgFertility));
             metabolismSpeedLabel.setText("  metabolism speed: " + df.format(b.avgMetabolism));
-            int cnt = 0;
             for (Species s : b.speciesList) {
                 if(!s.isExtinct()) {
                     s.fertilitySpecies.setText("  fertility: " + df.format(s.sumFertility / s.animalList.size()));
                     s.sightSpecies.setText("  sight: " + df.format(s.sumSight / s.animalList.size()));
                     s.metabolismSpecies.setText("  metabolism speed: " + df.format(s.sumMetabolism / s.animalList.size()));
                 }
-                else if(!isSpeciesExtinct[cnt]) {
+                else if(!isSpeciesExtinct[s.id]) {
                     vbox.getChildren().remove(s.fertilitySpecies);
                     vbox.getChildren().remove(s.sightSpecies);
                     vbox.getChildren().remove(s.metabolismSpecies);
                     s.speciesName.setText("Species " + s.name + ": DEAD");
-                    isSpeciesExtinct[cnt] = true;
+                    s.speciesName.getStyleClass().add("labelWarning");
+                    isSpeciesExtinct[s.id] = true;
                 }
-                cnt++;
+                // FILL IN populationStats
+                b.populationStats.get(s.id).add(s.animalList.size());
             }
+            // FILL IN geneStats
+            b.geneStats.get(0).add(b.avgFertility);
+            b.geneStats.get(1).add(b.avgMetabolism);
+            b.geneStats.get(2).add(b.avgSight);
+            // CLIP IF NECESSARY
+            if(b.geneStats.get(0).size() >= 32) {
+                for (int i = 0; i < Species.speciesCreated; i++)
+                    clip(b.populationStats.get(i));
+                for (int i = 0; i < Animal.GENECOUNT; i++)
+                    clip(b.geneStats.get(i));
+            }
+        }
+    }
+
+    public static void clip(LinkedList<?> list) {
+        // REDUCES ELEMENTS OF LIST BY HALF
+        ListIterator<?> li = list.listIterator();
+        while(li.hasNext()) {
+            li.next();
+            li.remove();
+            if(li.hasNext())
+                li.next();
         }
     }
 
@@ -141,21 +166,17 @@ public class BoardView {
     }
 
     public void drawEnd() {
-        Label endgame = new Label("Simulation ended after " + this.b.stepCount + " steps \n");
-        Label counter = new Label("Number of animals:\n"+b.starterAnimalCount+" --> "+b.animalCount);
-        Label fertilityFinal = new Label("Evolution of fertility:\n"+df.format(b.starterFertility)+" --> "+df.format(b.avgFertility));
-        Label metabolismSpeedFinal = new Label("Evolution of metabolism speed:\n"+df.format(b.starterMetabolism)+" --> "+df.format(b.avgMetabolism));
-        Label sightFinal = new Label("Evolution of sight:\n"+df.format(b.starterSight)+" --> "+df.format(b.avgSight));
-        counter.setTextAlignment(TextAlignment.CENTER);
-        fertilityFinal.setTextAlignment(TextAlignment.CENTER);
-        metabolismSpeedFinal.setTextAlignment(TextAlignment.CENTER);
-        sightFinal.setTextAlignment(TextAlignment.CENTER);
-        VBox vb = new VBox();
-        vb.setAlignment(Pos.CENTER);
-        vb.setPadding(new Insets(20, 20, 20, 20));
-        vb.getChildren().addAll(endgame, counter, fertilityFinal, metabolismSpeedFinal, sightFinal);
-        Scene endView = new Scene(vb);
-        endView.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
-        Main.primaryStage.setScene(endView);
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("test.fxml"));
+        try {
+            Parent root = loader.load();
+            Scene endScene = new Scene(root);
+            endScene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
+            Main.primaryStage.setScene(endScene);
+            Main.primaryStage.show();
+            System.out.println("theoretically works");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
