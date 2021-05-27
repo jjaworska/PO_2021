@@ -19,7 +19,10 @@ public class Species {
     float sumMetabolism = 0;
     LinkedList<Pair> animalList;
     LinkedList<Pair> descendantsList;
-    // displayng
+    //abilities
+    boolean canSwim;
+    boolean carrionFeeder;
+    // displaying
     String name;
     String chartColor;
     Image images;
@@ -41,6 +44,8 @@ public class Species {
         fertilitySpecies = new Label("  fertility");
         sightSpecies = new Label("  sight");
         metabolismSpecies = new Label("  metabolism speed");
+        canSwim=false;
+        carrionFeeder=false;
     }
     public boolean isExtinct() {
         return animalList.isEmpty() && descendantsList.isEmpty();

@@ -1,6 +1,7 @@
 package sample;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static java.lang.Math.abs;
 
@@ -13,6 +14,7 @@ public class Board {
     float starterMetabolism;
     int starterAnimalCount;
     int animalCount;
+    int freeArea;
 
     // fields of the Board class
     int height;
@@ -41,21 +43,59 @@ public class Board {
         fields = new Field[height][width];
         for (int x = 0; x < height; x++)
             for (int y = 0; y < width; y++)
-                fields[x][y] = new Field(rand, 300 - 25*foodFrequency);
+                fields[x][y] = new Field(rand, 250 - 20*foodFrequency);
 
         speciesList = new LinkedList<>();
-
+        freeArea=width*height-obstaclesCount;
+        generateLake();
         while (obstaclesCount-- > 0)
-            generateObstacle();
+            generateObstacle(foodFrequency);
     }
 
     // Three similar functions used in constructor
-    void generateObstacle(){
+    void generateLake(){
+        int x = rand.nextInt(height);
+        int y = rand.nextInt(width);
+        int n=0, c=0;
+        Queue<Pair> Q = new ConcurrentLinkedQueue<>();
+        Q.add(new Pair(x, y));
+        fields[x][y].visited=true;
+        while(!Q.isEmpty() && n< freeArea && c<freeArea-6)
+        {
+            Pair p= Q.remove();
+            int r=rand.nextInt(freeArea+4*n);
+            if(r< freeArea) {
+                if (!fieldAt(p).isWater)
+                {
+                    fieldAt(p).isWater = true;
+                    c++;
+                }
+                n++;
+                if(p.x>0){ fields[p.x-1][p.y].visited=true; Q.add(new Pair(p.x-1, p.y)); }
+                if(p.x<height-1){ fields[p.x+1][p.y].visited=true; Q.add(new Pair(p.x+1, p.y)); }
+                if(p.y<width-1){ fields[p.x][p.y+1].visited=true; Q.add(new Pair(p.x, p.y+1)); }
+                if(p.y>0){ fields[p.x][p.y-1].visited=true; Q.add(new Pair(p.x, p.y-1)); }
+            }
+        }
+        freeArea=freeArea-c;
+    }
+    void generateObstacle(int f){
         boolean success = false;
         while (!success) {
             int x = rand.nextInt(height);
             int y = rand.nextInt(width);
             if (fields[x][y].isFree()) {
+                if(!fields[x][y].isWater){
+                    int a = rand.nextInt(100);
+                    if (a<(f-1)*f){
+                        fields[x][y].tree=true;
+                        if(x>0) fields[x-1][y].foodFrequency /= 2;
+                        if(x<height-1) fields[x+1][y].foodFrequency /= 2;
+                        if(y>0) fields[x][y-1].foodFrequency /= 2;
+                        if(y<width-1) fields[x][y+1].foodFrequency /= 2;
+                        break;
+                    }
+                }
                 fields[x][y].obstacle=true;
                 success = true;
             }
@@ -68,7 +108,7 @@ public class Board {
             while (!success) {
                 int x = rand.nextInt(height);
                 int y = rand.nextInt(width);
-                if (fields[x][y].isFree()) {
+                if (fields[x][y].isFree(species)) {
                     fields[x][y].animal = new Animal(species);
                     species.animalList.add(new Pair(x, y));
                     success = true;
@@ -81,7 +121,7 @@ public class Board {
         return fields[p.x][p.y];
     }
 
-    Collection<Pair> findFood(Pair p, int d) {
+    Collection<Pair> findFood(Pair p, int d, Species species) {
         // returns list of all points q such that
         // - distance between q and p equals d
         // - there is food on this field
@@ -89,11 +129,22 @@ public class Board {
         int x = p.x; int y = p.y;
         for (int i = Math.max(0, x - d); i <= Math.min(height - 1, x + d); i++) {
             int j = y - d + abs(i - x);
-            if (j >= 0 && fields[i][j].hasFood)
+            if (j >= 0 && fields[i][j].food && (!fields[i][j].isWater || species.canSwim))
                 list.add(new Pair(i, j));
             j = y + d - abs(i - x);
-            if (j < width && fields[i][j].hasFood)
+            if (j < width && fields[i][j].food && (!fields[i][j].isWater || species.canSwim))
                 list.add(new Pair(i, j));
+        }
+        if(species.carrionFeeder)
+        {
+            for (int i = Math.max(0, x - d); i <= Math.min(height - 1, x + d); i++) {
+                int j = y - d + abs(i - x);
+                if (j >= 0 && fields[i][j].carrion>0 && (!fields[i][j].isWater || species.canSwim))
+                    list.add(new Pair(i, j));
+                j = y + d - abs(i - x);
+                if (j < width && fields[i][j].carrion>0 && (!fields[i][j].isWater || species.canSwim))
+                    list.add(new Pair(i, j));
+            }
         }
         return list;
     }
@@ -104,9 +155,13 @@ public class Board {
         Field Q = fieldAt(q);
         Pair copyP = new Pair(p);
         Animal a = P.animal;
-        if (Q.hasFood) {
-            a.hunger = 100;
-            Q.hasFood = false;
+        if (Q.food) {
+            a.hunger += 50;
+            Q.food = false;
+        }
+        if(Q.carrion>0 && a.species.carrionFeeder){
+            a.hunger += 50;
+            Q.carrion=0;
         }
         Q.animal = a;
         P.animal = null;
@@ -121,33 +176,33 @@ public class Board {
         }
     }
 
-    public boolean goUp(Pair p) {
+    public boolean goUp(Pair p, Species species) {
         Pair q = new Pair(p.x - 1, p.y);
-        if (q.x >= 0 && fieldAt(q).isFree()) {
+        if (q.x >= 0 && fieldAt(q).isFree(species)) {
             move(p, q);
             return true;
         }
         return false;
     }
-    public boolean goDown(Pair p) {
+    public boolean goDown(Pair p, Species species) {
         Pair q = new Pair(p.x + 1, p.y);
-        if (q.x < height && fieldAt(q).isFree()) {
+        if (q.x < height && fieldAt(q).isFree(species)) {
             move(p, q);
             return true;
         }
         return false;
     }
-    public boolean goLeft(Pair p) {
+    public boolean goLeft(Pair p, Species species) {
         Pair q = new Pair(p.x, p.y - 1);
-        if (q.y >= 0 && fieldAt(q).isFree()) {
+        if (q.y >= 0 && fieldAt(q).isFree(species)) {
             move(p, q);
             return true;
         }
         return false;
     }
-    public boolean goRight(Pair p) {
+    public boolean goRight(Pair p, Species species) {
         Pair q = new Pair(p.x, p.y + 1);
-        if (q.y < width && fieldAt(q).isFree()) {
+        if (q.y < width && fieldAt(q).isFree(species)) {
             move(p, q);
             return true;
         }
@@ -167,6 +222,7 @@ public class Board {
                 Animal a = fieldAt(p).animal;
                 if (!a.step()) {
                     fieldAt(p).animal = null;
+                    fieldAt(p).carrion=1;
                     it.remove();
                     continue;
                 }
@@ -180,23 +236,23 @@ public class Board {
                 if (!a.isEgg()) {
                     boolean moved = false;
                     for (int d = 1; d < a.sight && !moved; d++)
-                        for (Pair q : findFood(p, d)) {
-                            if (q.x < p.x && goUp(p)) {
+                        for (Pair q : findFood(p, d, a.species)) {
+                            if (q.x < p.x && goUp(p, a.species)) {
                                 a.direction = Animal.UP;
                                 moved = true;
                                 break;
                             }
-                            if (q.x > p.x && goDown(p)) {
+                            if (q.x > p.x && goDown(p, a.species)) {
                                 a.direction = Animal.DOWN;
                                 moved = true;
                                 break;
                             }
-                            if (q.y > p.y && goRight(p)) {
+                            if (q.y > p.y && goRight(p, a.species)) {
                                 a.direction = Animal.RIGHT;
                                 moved = true;
                                 break;
                             }
-                            if (q.y < p.y && goLeft(p)) {
+                            if (q.y < p.y && goLeft(p, a.species)) {
                                 a.direction = Animal.LEFT;
                                 moved = true;
                                 break;
@@ -217,25 +273,25 @@ public class Board {
                         while (!moved && itDirs.hasNext()) {
                             switch (itDirs.next()) {
                                 case Animal.UP:
-                                    if (goUp(p)) {
+                                    if (goUp(p, a.species)) {
                                         moved = true;
                                         a.direction = Animal.UP;
                                     }
                                     break;
                                 case Animal.DOWN:
-                                    if (goDown(p)) {
+                                    if (goDown(p, a.species)) {
                                         moved = true;
                                         a.direction = Animal.DOWN;
                                     }
                                     break;
                                 case Animal.LEFT:
-                                    if (goLeft(p)) {
+                                    if (goLeft(p, a.species)) {
                                         moved = true;
                                         a.direction = Animal.LEFT;
                                     }
                                     break;
                                 case Animal.RIGHT:
-                                    if (goRight(p)) {
+                                    if (goRight(p, a.species)) {
                                         moved = true;
                                         a.direction = Animal.RIGHT;
                                     }

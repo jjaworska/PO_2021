@@ -1,8 +1,10 @@
 package sample;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.chart.Chart;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
@@ -43,28 +45,26 @@ public class TestController implements Initializable {
                 ((Text) x).setFill(Color.web("#F6E8EA"));
 
         populationChart.setTitle("Population of species over time");
-
+        int i=0;
         for(Species s : BoardView.b.speciesList) {
             XYChart.Series<Number, Number> toAdd = new XYChart.Series<>();
             toAdd.setName(s.name);
             int cnt = 0;
             for(Integer y : BoardView.b.populationStats.get(s.id)) {
                 XYChart.Data<Number, Number> point = new XYChart.Data<>(cnt++, y);
-                /*Node lineSymbol = point.getNode().lookup(".chart-line-symbol");
-                lineSymbol.setStyle("-fx-background-color: " + s.chartColor + ";");*/
                 toAdd.getData().add(new XYChart.Data<>(cnt++, y));
             }
+
             populationChart.getData().add(toAdd);
-            Node line = toAdd.getNode().lookup(".chart-series-line");
-            line.setStyle("-fx-stroke: " + s.chartColor + ";");
-            //toAdd.getNode().setStyle("-fx-stroke: " + s.chartColor + ";\n -fx-background-color: " + s.chartColor + ";");
+            changeColor(i, s.chartColor);
+            i++;
         }
         populationChart.setCreateSymbols(false);
         populationChart.setLegendVisible(true);
 
         genesChart.setTitle("Evolution of genes");
 
-        for (int i = 0; i < Animal.GENECOUNT; i++) {
+        for (i = 0; i < Animal.GENECOUNT; i++) {
             XYChart.Series<Number, Number> toAdd = new XYChart.Series<>();
             toAdd.setName(Animal.GENENAME[i]);
             int cnt = 0;
@@ -77,10 +77,21 @@ public class TestController implements Initializable {
         genesChart.setCreateSymbols(false);
         genesChart.setLegendVisible(true);
 
-        for (LinkedList<Integer> stat : BoardView.b.populationStats) {
+        /*for (LinkedList<Integer> stat : BoardView.b.populationStats) {
             System.out.println(stat);
         }
         for (int i = 0; i < 3; i++)
-            System.out.println(BoardView.b.geneStats.get(i));
+            System.out.println(BoardView.b.geneStats.get(i)); */
+    }
+    private void changeColor(int position, String color) {
+        Platform.runLater(() -> {
+            Node nl = populationChart.lookup(".default-color" + position + ".chart-series-line");
+            Node ns = populationChart.lookup(".default-color" + position + ".chart-line-symbol");
+            Node nsl = populationChart.lookup(".default-color" + position + ".chart-legend-item-symbol");
+
+            nl.setStyle("-fx-stroke: " + color + ";");
+            ns.setStyle("-fx-background-color: " + color + ", white;");
+            nsl.setStyle("-fx-background-color: " + color + ", white;");
+        });
     }
 }

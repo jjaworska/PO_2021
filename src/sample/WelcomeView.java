@@ -44,14 +44,14 @@ public class WelcomeView extends GridPane {
     }
     int minvalue (TextField tf){
         if( tf==heightField ){
-            if(intvalue(widthField)==0) return 2;
-            int i = (intvalue(obstacleField) + intvalue(widthField) -1)/intvalue(widthField);
-            return Math.max(i, 2);
+            if(intvalue(widthField)==0) return 4;
+            int i = (2 * intvalue(obstacleField))/intvalue(widthField) +1;
+            return Math.max(i, 4);
         }
         else if( tf==widthField ) {
-            if(intvalue(heightField)==0) return 2;
-            int i = (intvalue(foodField) + intvalue(obstacleField) + intvalue(heightField) - 1) / intvalue(heightField);
-            return Math.max(i, 2);
+            if(intvalue(heightField)==0) return 4;
+            int i = ( 2* intvalue(obstacleField) ) / intvalue(heightField) +1;
+            return Math.max(i, 4);
         }
         else if (tf==(speciesField))
             return 1;
@@ -67,14 +67,15 @@ public class WelcomeView extends GridPane {
             return 10;
         else if ( tf==(speciesField) )
             return 5;
-        else if ( tf == obstacleField) return area;
-        else for(int i=0; i<svList.size(); i++)
-            {
-                if(!tf.equals(svList.get(i).numberOfAnimals))
-                {
-                    area=area-intvalue(svList.get(i).numberOfAnimals);
+        else if ( tf == obstacleField) return area/2-1;
+        else {
+            area=b.freeArea;
+            for (int i = 0; i < svList.size(); i++) {
+                if (!tf.equals(svList.get(i).numberOfAnimals)) {
+                    area = area - intvalue(svList.get(i).numberOfAnimals);
                 }
             }
+        }
         return area;
     }
     TextFormatter <Integer>  FormatterCreator(TextField tf){
@@ -118,12 +119,12 @@ public class WelcomeView extends GridPane {
         setVgap(10);
         setPadding(new Insets(25, 25, 25, 25));
 
-        Label heightLabel = new Label("Height (between 2 and 100)");
+        Label heightLabel = new Label("Height (between 4 and 100)");
         add(heightLabel, 0, 0);
         heightField = new TextField("20");
         add(heightField, 1, 0);
 
-        Label widthLabel = new Label("Width (between 2 and 100)");
+        Label widthLabel = new Label("Width (between 4 and 100)");
         add(widthLabel, 0, 1);
         widthField = new TextField("20");
         add(widthField, 1, 1);

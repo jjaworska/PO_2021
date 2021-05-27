@@ -27,6 +27,8 @@ public class BoardView {
     static DecimalFormat df = new DecimalFormat("#.##");
     static Image food_img = new Image(String.valueOf(BoardView.class.getResource("img/plant.png")));
     static Image obstacle_img = new Image(String.valueOf(BoardView.class.getResource("img/obstacle2.png")));
+    static Image dead_img = new Image(String.valueOf(BoardView.class.getResource("img/dead.png")));
+    static Image tree_img = new Image(String.valueOf(BoardView.class.getResource("img/flower.png")));
     static int M = 40;
     static Board b;
     @FXML
@@ -80,6 +82,27 @@ public class BoardView {
             vbox.getChildren().add(s.sightSpecies);
             vbox.getChildren().add(s.metabolismSpecies);
         }
+        firstDraw();
+    }
+
+    public void firstDraw()
+    {
+        GraphicsContext gc=this.canvas.getGraphicsContext2D();
+        for(int i=0;i<b.height; i++)
+        {
+            for(int j=0; j<b.width; j++)
+            {
+                gc.setFill(Color.YELLOWGREEN);
+                if(b.fields[i][j].isWater) gc.setFill(Color.LIGHTBLUE);
+                gc.fillRect(M*j, M*i, M, M);
+                if(b.fields[i][j].obstacle) {
+                    gc.drawImage(obstacle_img, M*j, M*i);
+                }
+                if(b.fields[i][j].tree){
+                    gc.drawImage(tree_img, M*j, M*i);
+                }
+            }
+        }
     }
 
     public void draw()
@@ -89,17 +112,23 @@ public class BoardView {
         {
             for(int j=0; j<b.width; j++)
             {
-                gc.setFill(Color.rgb(158,200,163));
+                gc.setFill(Color.YELLOWGREEN);
+                if(b.fields[i][j].isWater) gc.setFill(Color.LIGHTBLUE);
                 gc.fillRect(M*j, M*i, M, M);
                 if(b.fields[i][j].animal != null) {
-                    drawAnimal(b.fields[i][j].animal, M*j, M*i);
-                    //gc.drawImage(animal_img[b.fields[i][j].animal.direction], M*j, M*i);
+                    drawAnimal(b.fields[i][j].animal, j, i);
                 }
-                else if(b.fields[i][j].hasFood) {
+                else if(b.fields[i][j].food) {
                     gc.drawImage(food_img, M*j, M*i);
+                }
+                if(b.fields[i][j].carrion>0){
+                    gc.drawImage(dead_img, M*j, M*i);
                 }
                 if(b.fields[i][j].obstacle) {
                     gc.drawImage(obstacle_img, M*j, M*i);
+                }
+                if(b.fields[i][j].tree){
+                    gc.drawImage(tree_img, M*j, M*i);
                 }
             }
         }
@@ -153,28 +182,28 @@ public class BoardView {
         GraphicsContext gc=this.canvas.getGraphicsContext2D();
         gc.setFill(Color.WHITE);
         if(a.isEgg())
-            gc.fillOval(x, y, 15, 20);
+            gc.fillOval(M*x+10, M*y+10, 15, 20);
         else
         {
             //gc.drawImage(a.species.images[a.direction], x, y);
             ImageView iv = new ImageView(a.species.images);
             iv.setRotate(a.direction*90);
             SnapshotParameters params = new SnapshotParameters();
-            params.setFill(Color.rgb(158,200,163));
-            gc.drawImage(iv.snapshot(params, null), x, y);
+            params.setFill(Color.YELLOWGREEN);
+            if(b.fields[y][x].isWater) params.setFill(Color.LIGHTBLUE);
+            gc.drawImage(iv.snapshot(params, null), M*x, M*y);
         }
     }
 
     public void drawEnd() {
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("test.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("endview.fxml"));
         try {
             Parent root = loader.load();
             Scene endScene = new Scene(root);
             endScene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
             Main.primaryStage.setScene(endScene);
             Main.primaryStage.show();
-            System.out.println("theoretically works");
         } catch (IOException e) {
             e.printStackTrace();
         }
