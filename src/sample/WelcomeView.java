@@ -200,11 +200,11 @@ public class WelcomeView extends GridPane {
             SpeciesView sv=it.next();
             sv.species.name=sv.nameField.getText();
             if(sv.fertilityField.getText()!="")
-                sv.species.fertility=Float.parseFloat(sv.fertilityField.getText());
+                sv.species.geneSpeciesValue[Animal.FertilityId]=Float.parseFloat(sv.fertilityField.getText());
             if(sv.sightField.getText()!="")
-                sv.species.sight=Float.parseFloat(sv.sightField.getText());
+                sv.species.geneSpeciesValue[Animal.SightId]=Float.parseFloat(sv.sightField.getText());
             if(sv.metabolismField.getText()!="")
-                sv.species.metabolismSpeed=Float.parseFloat(sv.metabolismField.getText());
+                sv.species.geneSpeciesValue[Animal.MetabolismId]=Float.parseFloat(sv.metabolismField.getText());
             b.generateAnimals(intvalue(sv.numberOfAnimals), sv.species);
         }
         try {

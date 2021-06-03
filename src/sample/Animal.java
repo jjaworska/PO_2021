@@ -3,22 +3,25 @@ package sample;
 import java.util.Random;
 
 public class Animal {
+    // CONSTANTS
     static final int UP = 0, RIGHT = 1, DOWN = 2, LEFT = 3;
     static final int GENECOUNT = 3;
-    static String[] GENENAME = {"Fertility", "Metabolism speed", "Sight"};
+    static final String[] GENENAME = {"fertility", "metabolism speed", "sight"};
+    static final int FertilityId = 0;
+    static final int MetabolismId = 1;
+    static final int SightId = 2;
+    // RANDOMIZATION PARAMETERS
     static Random rg = new Random();
     static float mutationCoefficient = 0.1f;
+    // PROPERTIES
     Species species;
     int age = 0;
     boolean alive = true;
-    Pair position;
     int direction;
-    // needs
+    // NEEDS
     public float hunger;
-    // genes
-    float fertility;
-    float sight;
-    float metabolismSpeed; // indicates how fast an animal burns calories
+    // GENES
+    float[] genes;
 
     static float mutateValue(float x) {
         float r = rg.nextFloat();
@@ -32,25 +35,21 @@ public class Animal {
         this.species=species;
         this.direction = rg.nextInt(4);
         this.hunger = species.hunger;
-        this.sight = mutateValue(species.sight);
-        this.metabolismSpeed = mutateValue(species.metabolismSpeed);
-        this.fertility = mutateValue(species.fertility);
+        this.genes = species.geneSpeciesValue;
     }
 
     Animal getDescendant() {
         Animal a = new Animal(this.species);
         a.direction = rg.nextInt(4);
-        a.fertility = mutateValue(this.fertility);
-        a.sight = mutateValue(this.sight);
-        a.metabolismSpeed = mutateValue(this.metabolismSpeed);
+        for (int i = 0; i < GENECOUNT; i++)
+            a.genes[i] = mutateValue(this.genes[i]);
         return a;
     }
 
     public boolean step() {
         Random rg = new Random();
         age++;
-        //direction = rg.nextInt(4);
-        hunger -= metabolismSpeed;
+        hunger -= genes[MetabolismId];
         if(age > species.minimumLifespan) {
             // old animals die with increasing probability
             if (rg.nextInt(species.minimumLifespan) + species.minimumLifespan <= age)
@@ -61,9 +60,9 @@ public class Animal {
         return alive;
     }
     public void addStats() {
-        species.sumSight += this.sight;
-        species.sumFertility += this.fertility;
-        species.sumMetabolism += this.metabolismSpeed;
+        for(int i = 0; i < GENECOUNT; i++) {
+            species.geneSpeciesSum[i] += this.genes[i];
+        }
     }
 
     public boolean isEgg() {

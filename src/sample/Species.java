@@ -6,48 +6,45 @@ import javafx.scene.image.Image;
 import java.util.LinkedList;
 
 public class Species {
-    static int speciesCreated = 0;
+    static int SPECIESCREATED = 0;
     final int id;
-
-    float fertility;
-    float sight;
-    float metabolismSpeed;
+    // DEFAULT VALUES
+    float[] geneSpeciesValue = {7, 14, 10};
     int hunger;
     static int minimumLifespan = 40;
-    float sumSight = 0;
-    float sumFertility = 0;
-    float sumMetabolism = 0;
+    // GENES
+    float[] geneSpeciesSum;
+    // MEMBERS OF SPECIES
     LinkedList<Pair> animalList;
     LinkedList<Pair> descendantsList;
-    //abilities
+    // ABILITIES
     boolean canSwim;
     boolean carrionFeeder;
-    // displaying
+    // DISPLAYING
     String name;
     String chartColor;
-    Image images;
-    // fields required for BoardView
+    Image speciesImage;
+    // FIELDS REQUIRED FOR BOARDVIEW
     public Label speciesName;
-    public Label fertilitySpecies;
-    public Label sightSpecies;
-    public Label metabolismSpecies;
+    public Label[] geneSpeciesLabel;
+    
     public Species()
     {
-        id = speciesCreated++;
+        id = SPECIESCREATED++;
         animalList=new LinkedList<>();
         descendantsList=new LinkedList<>();
-        sight=7;
         hunger=100;
-        fertility=14;
-        metabolismSpeed=10;
         speciesName = new Label("Species");
-        fertilitySpecies = new Label("  fertility");
-        sightSpecies = new Label("  sight");
-        metabolismSpecies = new Label("  metabolism speed");
+        geneSpeciesSum = new float[Animal.GENECOUNT];
+        geneSpeciesLabel = new Label[Animal.GENECOUNT];
+        for (int i = 0; i < Animal.GENECOUNT; i++) {
+            geneSpeciesLabel[i] = new Label("  " + Animal.GENENAME[i]);
+        }
         canSwim=false;
         carrionFeeder=false;
     }
-    public boolean isExtinct() {
+    public boolean isExtinct()
+    {
         return animalList.isEmpty() && descendantsList.isEmpty();
     }
     public void addDescendants()

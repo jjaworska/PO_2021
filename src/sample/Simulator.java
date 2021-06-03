@@ -29,10 +29,6 @@ public class Simulator {
             timeline.stop();
         }
     }
-    /*public void start()
-    {
-        this.timeline.play();
-    }*/
     public void stop()
     {
         this.timeline.stop();

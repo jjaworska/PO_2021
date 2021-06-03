@@ -31,6 +31,8 @@ public class BoardView {
     static Image tree_img = new Image(String.valueOf(BoardView.class.getResource("img/flower.png")));
     static int M = 40;
     static Board b;
+    static float[] starterValue;
+    private boolean[] isSpeciesExtinct;
     @FXML
     public Canvas canvas;
     @FXML
@@ -49,7 +51,7 @@ public class BoardView {
     public Label sightLabel;
 
     private Timeline timeline;
-    private boolean[] isSpeciesExtinct;
+
     public void init (Board b){
         this.b=b;
         this.timeline=new Timeline(new KeyFrame(Duration.millis(200), a->{
@@ -78,10 +80,11 @@ public class BoardView {
         for (Species s : b.speciesList) {
             vbox.getChildren().add(s.speciesName);
             s.speciesName.setText("Species " + s.name);
-            vbox.getChildren().add(s.fertilitySpecies);
-            vbox.getChildren().add(s.sightSpecies);
-            vbox.getChildren().add(s.metabolismSpecies);
+            for(int i = 0; i < 3; i++) {
+                vbox.getChildren().add(s.geneSpeciesLabel[i]);
+            }
         }
+        starterValue = new float[Animal.GENECOUNT];
         firstDraw();
     }
 
@@ -133,19 +136,20 @@ public class BoardView {
             }
         }
         if(b.stepCount % 5 == 0) {
-            sightLabel.setText("  sight: " + df.format(b.avgSight));
-            fertilityLabel.setText("  fertility: " + df.format(b.avgFertility));
-            metabolismSpeedLabel.setText("  metabolism speed: " + df.format(b.avgMetabolism));
+            fertilityLabel.setText("  Fertility: " + df.format(b.avgGeneValue[Animal.FertilityId]));
+            metabolismSpeedLabel.setText("  Metabolism speed: " + df.format(b.avgGeneValue[Animal.MetabolismId]));
+            sightLabel.setText("  Sight: " + df.format(b.avgGeneValue[Animal.SightId]));
             for (Species s : b.speciesList) {
                 if(!s.isExtinct()) {
-                    s.fertilitySpecies.setText("  fertility: " + df.format(s.sumFertility / s.animalList.size()));
-                    s.sightSpecies.setText("  sight: " + df.format(s.sumSight / s.animalList.size()));
-                    s.metabolismSpecies.setText("  metabolism speed: " + df.format(s.sumMetabolism / s.animalList.size()));
+                    for(int i = 0; i < Animal.GENECOUNT; i++) {
+                        s.geneSpeciesLabel[i].setText("  " + Animal.GENENAME[i] + ": " +
+                                df.format(s.geneSpeciesSum[i] / s.animalList.size()));
+                    }
                 }
                 else if(!isSpeciesExtinct[s.id]) {
-                    vbox.getChildren().remove(s.fertilitySpecies);
-                    vbox.getChildren().remove(s.sightSpecies);
-                    vbox.getChildren().remove(s.metabolismSpecies);
+                    for(int i = 0; i < Animal.GENECOUNT; i++) {
+                        vbox.getChildren().remove(s.geneSpeciesLabel[i]);
+                    }
                     s.speciesName.setText("Species " + s.name + ": DEAD");
                     s.speciesName.getStyleClass().add("labelWarning");
                     isSpeciesExtinct[s.id] = true;
@@ -154,12 +158,12 @@ public class BoardView {
                 b.populationStats.get(s.id).add(s.animalList.size());
             }
             // FILL IN geneStats
-            b.geneStats.get(0).add(b.avgFertility);
-            b.geneStats.get(1).add(b.avgMetabolism);
-            b.geneStats.get(2).add(b.avgSight);
+            for(int i = 0; i < Animal.GENECOUNT; i++) {
+                b.geneStats.get(i).add(b.avgGeneValue[i]);
+            }
             // CLIP IF NECESSARY
             if(b.geneStats.get(0).size() >= 32) {
-                for (int i = 0; i < Species.speciesCreated; i++)
+                for (int i = 0; i < Species.SPECIESCREATED; i++)
                     clip(b.populationStats.get(i));
                 for (int i = 0; i < Animal.GENECOUNT; i++)
                     clip(b.geneStats.get(i));
@@ -186,7 +190,7 @@ public class BoardView {
         else
         {
             //gc.drawImage(a.species.images[a.direction], x, y);
-            ImageView iv = new ImageView(a.species.images);
+            ImageView iv = new ImageView(a.species.speciesImage);
             iv.setRotate(a.direction*90);
             SnapshotParameters params = new SnapshotParameters();
             params.setFill(Color.YELLOWGREEN);

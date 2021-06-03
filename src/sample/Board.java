@@ -6,12 +6,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import static java.lang.Math.abs;
 
 public class Board {
-    float avgSight;
-    float avgFertility;
-    float avgMetabolism;
-    float starterSight;
-    float starterFertility;
-    float starterMetabolism;
+    float[] avgGeneValue;
+
     int starterAnimalCount;
     int animalCount;
     int freeArea;
@@ -32,6 +28,7 @@ public class Board {
         this.width = width;
         this.rand = new Random();
 
+        this.avgGeneValue = new float[Animal.GENECOUNT];
         geneStats = new LinkedList<>();
         for (int i = 0; i < Animal.GENECOUNT; i++)
             geneStats.add(new LinkedList<>());
@@ -169,7 +166,7 @@ public class Board {
         p.y = q.y;
         if (a.hunger > 80 && !a.isYoung()) {
             // lays an egg with probability fertility%
-            if (rand.nextInt(100) < a.fertility) {
+            if (rand.nextInt(100) < a.genes[Animal.FertilityId]) {
                 P.animal = a.getDescendant();
                 a.species.descendantsList.add(copyP);
             }
@@ -214,9 +211,9 @@ public class Board {
                 fields[x][y].generateFood();
         animalCount=0;
         for (Species species : speciesList) {
-            species.sumSight = 0;
-            species.sumFertility = 0;
-            species.sumMetabolism = 0;
+            for(int i = 0; i < Animal.GENECOUNT; i++) {
+                species.geneSpeciesSum[i] = 0;
+            }
             for (Iterator<Pair> it = species.animalList.iterator(); it.hasNext(); ) {
                 Pair p = it.next();
                 Animal a = fieldAt(p).animal;
@@ -226,16 +223,16 @@ public class Board {
                     it.remove();
                     continue;
                 }
-                species.sumSight += a.sight;
-                species.sumFertility += a.fertility;
-                species.sumMetabolism += a.metabolismSpeed;
+                for(int i = 0; i < Animal.GENECOUNT; i++) {
+                    species.geneSpeciesSum[i] += a.genes[i];
+                }
                 animalCount++;
                 if (a.isEgg()) {
                     continue;
                 }
                 if (!a.isEgg()) {
                     boolean moved = false;
-                    for (int d = 1; d < a.sight && !moved; d++)
+                    for (int d = 1; d < a.genes[Animal.SightId] && !moved; d++)
                         for (Pair q : findFood(p, d, a.species)) {
                             if (q.x < p.x && goUp(p, a.species)) {
                                 a.direction = Animal.UP;
@@ -304,26 +301,18 @@ public class Board {
             species.addDescendants();
         }
 
-        float sumSight = 0.0f;
-        float sumFertility = 0.0f;
-        float sumMetabolism = 0.0f;
+        float[] geneSum = new float[Animal.GENECOUNT];
         for(Species s : speciesList) {
-            sumSight += s.sumSight;
-            sumFertility += s.sumFertility;
-            sumMetabolism += s.sumMetabolism;
+            for(int i = 0; i < Animal.GENECOUNT; i++) {
+                geneSum[i] += s.geneSpeciesSum[i];
+            }
         }
         if(animalCount!=0) {
-            avgMetabolism = sumMetabolism/animalCount;
-            avgFertility = sumFertility/animalCount;
-            avgSight = sumSight/animalCount;
+            for(int i = 0; i < Animal.GENECOUNT; i++) {
+                avgGeneValue[i] = geneSum[i] / animalCount;
+            }
         }
 
-        if(stepCount == 0)
-        {
-            starterFertility=avgFertility;
-            starterMetabolism=avgMetabolism;
-            starterSight=avgSight;
-        }
         stepCount++;
 
         return animalCount>0;
