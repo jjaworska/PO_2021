@@ -5,7 +5,7 @@ import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.util.Duration;
 
-public class Simulator {
+/*public class Simulator {
     private Timeline timeline;
     private final BoardView boardview;
     public Simulator(BoardView boardview)
@@ -33,4 +33,4 @@ public class Simulator {
     {
         this.timeline.stop();
     }
-}
+}*/

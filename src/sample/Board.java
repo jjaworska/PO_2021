@@ -20,6 +20,7 @@ public class Board {
     LinkedList<Species> speciesList;
     LinkedList<LinkedList<Integer>> populationStats;
     LinkedList<LinkedList<Float>> geneStats;
+    float[] starterGeneStats;
 
     Random rand;
 
@@ -28,6 +29,7 @@ public class Board {
         this.width = width;
         this.rand = new Random();
 
+        this.starterGeneStats = new float[Animal.GENECOUNT];
         this.avgGeneValue = new float[Animal.GENECOUNT];
         geneStats = new LinkedList<>();
         for (int i = 0; i < Animal.GENECOUNT; i++)
@@ -49,7 +51,6 @@ public class Board {
             generateObstacle(foodFrequency);
     }
 
-    // Three similar functions used in constructor
     void generateLake(){
         int x = rand.nextInt(height);
         int y = rand.nextInt(width);
@@ -107,6 +108,8 @@ public class Board {
                 int y = rand.nextInt(width);
                 if (fields[x][y].isFree(species)) {
                     fields[x][y].animal = new Animal(species);
+                    for(int i = 0; i < Animal.GENECOUNT; i++)
+                        starterGeneStats[i] += fields[x][y].animal.genes[i];
                     species.animalList.add(new Pair(x, y));
                     success = true;
                 }

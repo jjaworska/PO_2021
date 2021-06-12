@@ -207,6 +207,8 @@ public class WelcomeView extends GridPane {
                 sv.species.geneSpeciesValue[Animal.MetabolismId]=Float.parseFloat(sv.metabolismField.getText());
             b.generateAnimals(intvalue(sv.numberOfAnimals), sv.species);
         }
+        for(int i = 0; i < Animal.GENECOUNT; i++)
+            b.starterGeneStats[i] /= b.starterAnimalCount;
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("boardview.fxml"));
             Parent root = loader.load();

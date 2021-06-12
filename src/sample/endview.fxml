@@ -1,57 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.TextFlow?>
 
 <AnchorPane prefHeight="720.0" prefWidth="1080.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.EndViewController">
    <children>
-      <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-         <children>
-            <TextFlow fx:id="information" prefWidth="200.0" textAlignment="CENTER">
-               <VBox.margin>
-                  <Insets bottom="20.0" top="20.0" />
-               </VBox.margin></TextFlow>
-            <ScrollPane hbarPolicy="NEVER" prefHeight="505.0" prefWidth="1080.0">
-              <content>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefWidth="1080.0">
+      <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <content>
+            <StackPane>
+               <children>
+                  <VBox alignment="CENTER" prefHeight="200.0">
                      <children>
-                        <VBox alignment="CENTER" prefHeight="560.0" prefWidth="1066.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="0.0">
-                           <children>
-                              <LineChart fx:id="populationChart" minHeight="240.0" stylesheets="@styles.css">
-                                <xAxis>
-                                  <NumberAxis side="BOTTOM" fx:id="xAxisPopulation" />
-                                </xAxis>
-                                <yAxis>
-                                  <NumberAxis fx:id="yAxisPopulation" side="LEFT" />
-                                </yAxis>
-                                 <VBox.margin>
-                                    <Insets bottom="20.0" top="20.0" />
-                                 </VBox.margin>
-                              </LineChart>
-                              <LineChart fx:id="genesChart" minHeight="240.0">
-                                <xAxis>
-                                  <NumberAxis side="BOTTOM" fx:id="xAxisGenes" />
-                                </xAxis>
-                                <yAxis>
-                                  <NumberAxis fx:id="yAxisGenes" side="LEFT" />
-                                </yAxis>
-                                 <VBox.margin>
-                                    <Insets bottom="20.0" top="20.0" />
-                                 </VBox.margin>
-                              </LineChart>
-                           </children>
-                        </VBox>
+                        <TextFlow fx:id="information" minHeight="100.0" prefWidth="200.0" styleClass="styles.css" textAlignment="CENTER">
+                           <VBox.margin>
+                              <Insets top="20.0" />
+                           </VBox.margin>
+                        </TextFlow>
+                        <LineChart fx:id="populationChart" minHeight="240.0" stylesheets="@styles.css">
+                          <xAxis>
+                            <NumberAxis side="BOTTOM" fx:id="xAxisPopulation" />
+                          </xAxis>
+                          <yAxis>
+                            <NumberAxis fx:id="yAxisPopulation" side="LEFT" />
+                          </yAxis>
+                           <VBox.margin>
+                              <Insets bottom="20.0" top="20.0" />
+                           </VBox.margin>
+                        </LineChart>
+                        <LineChart fx:id="genesChart" minHeight="240.0" stylesheets="@styles.css">
+                          <xAxis>
+                            <NumberAxis side="BOTTOM" fx:id="xAxisGenes" />
+                          </xAxis>
+                          <yAxis>
+                            <NumberAxis fx:id="yAxisGenes" side="LEFT" />
+                          </yAxis>
+                        </LineChart>
                      </children>
-                  </AnchorPane>
-              </content>
-            </ScrollPane>
-         </children>
-      </VBox>
+                  </VBox>
+               </children>
+            </StackPane>
+         </content>
+      </ScrollPane>
    </children>
 </AnchorPane>

@@ -33,17 +33,18 @@ public class EndViewController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         Text endgame = new Text("Simulation ended after " + BoardView.b.stepCount + " steps \n");
+        endgame.setFill(Color.web("#494949"));
         Text counter = new Text("Number of animals:\n"+ BoardView.b.starterAnimalCount+" --> "+BoardView.b.animalCount + "\n");
+        counter.setFill(Color.web("#494949"));
         information.getChildren().addAll(endgame, counter);
         for(int i = 0; i < Animal.GENECOUNT; i++) {
-            information.getChildren().add( new Text("Evolution of " + Animal.GENENAME[i] +
-                    BoardView.df.format(BoardView.starterValue[i]) + " --> " +
+            Text toAdd = new Text("Evolution of " + Animal.GENENAME[i] + ": " +
+                    BoardView.df.format(BoardView.b.starterGeneStats[i]) + " --> " +
                     BoardView.df.format(BoardView.b.avgGeneValue[i]) + "\n"
-            ));
+            );
+            toAdd.setFill(Color.web("#494949"));
+            information.getChildren().add(toAdd);
         }
-        for(Node x : information.getChildren())
-            if(x instanceof Text)
-                ((Text) x).setFill(Color.web("#F6E8EA"));
 
         populationChart.setTitle("Population of species over time");
         int i=0;

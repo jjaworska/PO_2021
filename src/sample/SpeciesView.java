@@ -74,7 +74,6 @@ public class SpeciesView extends GridPane {
         ready.setOnAction(actionEvent -> wv.start());
         swimming= new CheckBox();
         swimming.selectedProperty().addListener(new ChangeListener<Boolean>() {
-
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                 species.canSwim=newValue;

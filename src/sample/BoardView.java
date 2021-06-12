@@ -15,6 +15,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.ArcType;
 import javafx.util.Duration;
 
 import java.io.IOException;
@@ -31,10 +32,10 @@ public class BoardView {
     static Image tree_img = new Image(String.valueOf(BoardView.class.getResource("img/flower.png")));
     static int M = 40;
     static Board b;
-    static float[] starterValue;
     private boolean[] isSpeciesExtinct;
     @FXML
     public Canvas canvas;
+    public Canvas background;
     @FXML
     public Button StartButton;
     @FXML
@@ -51,18 +52,25 @@ public class BoardView {
     public Label sightLabel;
 
     private Timeline timeline;
+    //public GraphicsContext backgroundGc;
 
-    public void init (Board b){
-        this.b=b;
-        this.timeline=new Timeline(new KeyFrame(Duration.millis(200), a->{
-            if(b.makeStep())
+    public static final Color grassColor = Color.web("86bb8c");
+    public static final Color waterColor = Color.LIGHTBLUE;
+
+    public void init(Board b) {
+        this.b = b;
+        //backgroundGc = this.canvas.getGraphicsContext2D();
+        this.timeline = new Timeline(new KeyFrame(Duration.millis(200), a -> {
+            if (b.makeStep())
                 draw();
             else {
                 drawEnd();
                 timeline.stop();
             }
         }));
-        this.canvas.setWidth(b.width*M);
+        this.background.setWidth(b.width * M);
+        this.background.setHeight(b.height * M);
+        this.canvas.setWidth(b.width * M);
         this.canvas.setHeight(b.height * M);
         this.timeline.setCycleCount(Timeline.INDEFINITE);
         StartButton.setOnAction(actionEvent -> this.timeline.play());
@@ -80,24 +88,29 @@ public class BoardView {
         for (Species s : b.speciesList) {
             vbox.getChildren().add(s.speciesName);
             s.speciesName.setText("Species " + s.name);
-            for(int i = 0; i < 3; i++) {
+            for (int i = 0; i < 3; i++) {
                 vbox.getChildren().add(s.geneSpeciesLabel[i]);
             }
         }
-        starterValue = new float[Animal.GENECOUNT];
-        firstDraw();
+        drawBackground();
     }
 
-    public void firstDraw()
-    {
-        GraphicsContext gc=this.canvas.getGraphicsContext2D();
-        for(int i=0;i<b.height; i++)
-        {
-            for(int j=0; j<b.width; j++)
-            {
-                gc.setFill(Color.YELLOWGREEN);
-                if(b.fields[i][j].isWater) gc.setFill(Color.LIGHTBLUE);
-                gc.fillRect(M*j, M*i, M, M);
+
+    // DRAWS GRASS, WATER, OBSTACLES AND TREES (AKA FLOWERS)
+    public void drawBackground() {
+        GraphicsContext gc = background.getGraphicsContext2D();
+        for (int i = 0; i < b.height; i++)
+            for(int j = 0; j < b.width; j++) {
+                if (b.fields[i][j].isWater) {
+                    gc.setFill(waterColor);
+                    gc.fillRect(M * j, M * i, M, M);
+                }
+                else {
+                    gc.setFill(grassColor);
+                    gc.fillRect(M*j, M*i, M, M);
+                }
+                for(int t = 0; t < 4; t++)
+                    checkField(i, j, t, gc); // DEALING WITH LAKE EDGES
                 if(b.fields[i][j].obstacle) {
                     gc.drawImage(obstacle_img, M*j, M*i);
                 }
@@ -105,19 +118,58 @@ public class BoardView {
                     gc.drawImage(tree_img, M*j, M*i);
                 }
             }
-        }
     }
 
+    // CHECKES IF A FIELD SHOULD BE ROUNDED
+    void checkField(int i, int j, int which, GraphicsContext gc) {
+        int different = 0;
+        int di = (which < 2 ? -1 : 1);
+        int dj = ((which == 0 || which == 3) ? 1 : -1);
+        if(i + di >= 0 && i + di < b.height)
+            different += (b.fields[i][j].isWater != b.fields[i + di][j].isWater ? 1 : 0);
+        if(j + dj >= 0 && j + dj < b.width)
+            different += (b.fields[i][j].isWater != b.fields[i][j + dj].isWater ? 1 : 0);
+        if(different == 2 && b.fields[i + di][j + dj].isWater != b.fields[i][j].isWater)
+            drawCorner(gc, grassColor, i, j, which, b.fields[i][j].isWater);
+    }
+
+    public void drawCorner(GraphicsContext gc, Color color, int i, int j, int which, boolean isWater) {
+        int m = M / 2;
+        if (isWater) {
+            gc.setFill(grassColor);
+        } else {
+            gc.setFill(waterColor);
+        }
+        switch(which) {
+            case 0:
+                gc.fillRect(M * j + m, M * i, m, m);
+                break;
+            case 1:
+                gc.fillRect(M * j, M * i, m, m);
+                break;
+            case 2:
+                gc.fillRect(M * j, M * i + m, m, m);
+                break;
+            case 3:
+                gc.fillRect(M * j + m, M * i + m, m, m);
+        }
+        if (isWater) {
+            gc.setFill(waterColor);
+        } else {
+            gc.setFill(grassColor);
+        }
+        gc.fillArc(M * j, M * i, M, M, which * 90, 90, ArcType.ROUND);
+    }
+
+    // DRAWS ANIMALS AND FOOD
     public void draw()
     {
         GraphicsContext gc=this.canvas.getGraphicsContext2D();
+        gc.clearRect(0, 0, M*b.width, M*b.height);
         for(int i=0;i<b.height; i++)
         {
             for(int j=0; j<b.width; j++)
             {
-                gc.setFill(Color.YELLOWGREEN);
-                if(b.fields[i][j].isWater) gc.setFill(Color.LIGHTBLUE);
-                gc.fillRect(M*j, M*i, M, M);
                 if(b.fields[i][j].animal != null) {
                     drawAnimal(b.fields[i][j].animal, j, i);
                 }
@@ -126,12 +178,6 @@ public class BoardView {
                 }
                 if(b.fields[i][j].carrion>0){
                     gc.drawImage(dead_img, M*j, M*i);
-                }
-                if(b.fields[i][j].obstacle) {
-                    gc.drawImage(obstacle_img, M*j, M*i);
-                }
-                if(b.fields[i][j].tree){
-                    gc.drawImage(tree_img, M*j, M*i);
                 }
             }
         }
@@ -189,12 +235,11 @@ public class BoardView {
             gc.fillOval(M*x+10, M*y+10, 15, 20);
         else
         {
-            //gc.drawImage(a.species.images[a.direction], x, y);
             ImageView iv = new ImageView(a.species.speciesImage);
             iv.setRotate(a.direction*90);
             SnapshotParameters params = new SnapshotParameters();
-            params.setFill(Color.YELLOWGREEN);
-            if(b.fields[y][x].isWater) params.setFill(Color.LIGHTBLUE);
+            // it is transparent now
+            params.setFill(Color.TRANSPARENT);
             gc.drawImage(iv.snapshot(params, null), M*x, M*y);
         }
     }

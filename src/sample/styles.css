@@ -5,13 +5,13 @@
    --lavender-blush: #f6e8eaff; */
 
 .root {
-    -fx-background-color: #606060;
-    -fx-text-fill: #F6E8EA;
-    -fx-font-size: 11pt;
+    -fx-background-color: #c9eacd;
+    -fx-text-fill: #494949;
+    -fx-font-size: 12pt;
 }
 
 .button {
-    -fx-background-color: #86BB8C;
+    -fx-background-color: #86bb8c;
     -fx-background-radius: 10;
     -fx-min-width: 60;
     -fx-padding: 5;
@@ -22,11 +22,11 @@
 }
 .scroll-pane {
     -fx-background-color: transparent;
-    -fx-fill: #606060;
+    -fx-fill: #494949;
 }
 
 .label {
-    -fx-text-fill: #F6E8EA;
+    -fx-text-fill: #494949;
 }
 
 .labelWarning {
@@ -35,31 +35,31 @@
 
 .axis {
     -fx-font-size: 1.4em;
-    -fx-tick-label-fill: #F6E8EA;
+    -fx-tick-label-fill: #494949;
 }
 
 .axis-label {
-    -fx-text-fill: #F6E8EA;
+    -fx-text-fill: #494949;
 }
 
 .chart {
-    -fx-background-color: #606060;
+    -fx-background-color: #c9eacd;
 }
 
 .chart-title {
-    -fx-text-fill: #F6E8EA;
+    -fx-text-fill: #494949;
     -fx-font-size: 1.6em;
 }
 
 .chart-legend {
-    -fx-text-fill: #606060;
+    -fx-text-fill: #494949;
 }
 
 .chart-legend {
-    -fx-background-color: #606060;
+    -fx-background-color: #c9eacd;
 }
 
 .text-area {
-    -fx-text-fill: #F6E8EA;
+    -fx-text-fill: #494949;
     -fx-font-size: 16pt;
 }
