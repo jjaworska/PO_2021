@@ -2,12 +2,16 @@ package sample;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
 
 public class SpeciesView extends GridPane {
     public static Board board;
@@ -15,7 +19,7 @@ public class SpeciesView extends GridPane {
     int number;
     int image=0;
     public Button previous, next, previousimage, nextimage, ready;
-    public TextField nameField, fertilityField, sightField, metabolismField, numberOfAnimals;
+    public TextField nameField, fertilityField, sightField, metabolismField, lifespanField, mutationField, numberOfAnimals;
     public CheckBox swimming, carrionFeeder;
     public Species species;
     public Canvas canvas;
@@ -24,6 +28,8 @@ public class SpeciesView extends GridPane {
         image=(image+1)%imagesCount;
         GraphicsContext gc=this.canvas.getGraphicsContext2D();
         gc.clearRect(0, 0, 100, 100);
+        gc.setFill(Color.web("FFFFFF88"));
+        gc.fillRect(0,0, 100, 100);
         gc.drawImage(Images.t[image], 0, 0, 100, 100);
         species.speciesImage = Images.t[image];
         species.chartColor = Images.c[image];
@@ -32,11 +38,11 @@ public class SpeciesView extends GridPane {
         image=(image+imagesCount-1)%imagesCount;
         GraphicsContext gc=this.canvas.getGraphicsContext2D();
         gc.clearRect(0, 0, 100, 100);
+        gc.setFill(Color.web("FFFFFF88"));
+        gc.fillRect(0,0, 100, 100);
         gc.drawImage(Images.t[image], 0, 0, 100, 100);
         species.speciesImage = Images.t[image];
         species.chartColor = Images.c[image];
-        /*gc.drawImage(Images.t[image][Animal.UP], 0, 0, 100, 100);
-        species.images=Images.t[image];*/
     }
     public SpeciesView(WelcomeView welcomeview, Species species, int i)
     {
@@ -46,6 +52,8 @@ public class SpeciesView extends GridPane {
         number=i;
         canvas=new Canvas(100, 100);
         GraphicsContext gc=this.canvas.getGraphicsContext2D();
+        gc.setFill(Color.web("FFFFFF88"));
+        gc.fillRect(0, 0, 100, 100);
         gc.drawImage(Images.t[image], 0, 0, 100, 100);
         species.speciesImage =Images.t[image];
         species.chartColor = Images.c[image];
@@ -56,13 +64,19 @@ public class SpeciesView extends GridPane {
         sightField.setTextFormatter(FloatFormatterCreator(sightField));
         metabolismField=new TextField("11");
         metabolismField.setTextFormatter(FloatFormatterCreator(metabolismField));
-        numberOfAnimals=new TextField("1");
+        lifespanField=new TextField("80");
+        lifespanField.setTextFormatter(FloatFormatterCreator(lifespanField));
+        numberOfAnimals=new TextField("10");
         numberOfAnimals.setTextFormatter(wv.FormatterCreator(numberOfAnimals));
+        mutationField=new TextField("10");
+        mutationField.setTextFormatter(wv.FormatterCreator(mutationField));
         previous=new Button("prev");
+        GridPane.setHalignment(previous, HPos.RIGHT);
         previous.setOnAction(actionEvent -> Main.primaryStage.setScene(WelcomeView.scenesList.get((number+WelcomeView.scenesList.size()-1)%WelcomeView.scenesList.size())));
         next=new Button("next");
         next.setOnAction(actionEvent -> Main.primaryStage.setScene(WelcomeView.scenesList.get((number+1)%WelcomeView.scenesList.size())));
         previousimage=new Button("prevIm");
+        GridPane.setHalignment(previousimage, HPos.RIGHT);
         previousimage.setOnAction(actionEvent -> {
             decrement();
         });
@@ -89,12 +103,14 @@ public class SpeciesView extends GridPane {
         });
         setHgap(10);
         setVgap(10);
+        setPrefWidth(600);
         setPadding(new Insets(25, 25, 25, 25));
         add(previous, 0, 0);
         add(nameField, 1, 0);
         add(next, 2, 0);
         add(previousimage, 0, 2);
         add(canvas, 1, 2);
+        GridPane.setHalignment(canvas, HPos.CENTER);
         add(nextimage, 2, 2);
         add(new Label("fertility:"), 0, 3);
         add(fertilityField, 1, 3);
@@ -102,14 +118,38 @@ public class SpeciesView extends GridPane {
         add(sightField, 1, 4);
         add(new Label("metabolism speed:"), 0, 5);
         add(metabolismField, 1, 5);
-        add(new Label("number of animals:"), 0, 6);
-        add(numberOfAnimals, 1, 6);
-        add(new Label("Swimming:"), 0, 7);
-        add(swimming, 1, 7);
-        add(new Label("Carrion Feeder:"), 0, 8);
-        add(carrionFeeder, 1, 8);
-        add(ready, 1, 10);
+        add(new Label("minimum lifespan:"), 0, 6);
+        add(lifespanField, 1, 6);
+        add(new Label("number of animals:"), 0, 7);
+        add(numberOfAnimals, 1, 7);
+        add(new Label("mutation coefficient"), 0, 8);
+        add(mutationField, 1, 8);
+        add(new Label("Swimming:"), 0, 9);
+        add(swimming, 1, 9);
+        GridPane.setHalignment(swimming, HPos.CENTER);
+        add(new Label("Carrion Feeder:"), 0, 10);
+        add(carrionFeeder, 1, 10);
+        GridPane.setHalignment(carrionFeeder, HPos.CENTER);
+        add(ready, 1, 11);
+        GridPane.setHalignment(ready, HPos.CENTER);
+        setAlignment(Pos.CENTER);
+
+        for(Node x : getChildren()) {
+            if(x instanceof Label)
+                GridPane.setHalignment(x, HPos.LEFT);
+            else
+                GridPane.setHalignment(x, HPos.CENTER);
+        }
+
+        ColumnConstraints col1 = new ColumnConstraints();
+        col1.setPercentWidth(30);
+        ColumnConstraints col2 = new ColumnConstraints();
+        col2.setPercentWidth(40);
+        ColumnConstraints col3 = new ColumnConstraints();
+        col3.setPercentWidth(30);
+        getColumnConstraints().addAll(col1,col2,col3);
     }
+
     TextFormatter<Float> FloatFormatterCreator(TextField tf){
         return new TextFormatter<>(change -> {
 
@@ -132,9 +172,15 @@ public class SpeciesView extends GridPane {
         });
     }
     float minvalue(TextField tf){
+        if(tf == mutationField)
+            return 0;
         return 1;
     }
     float maxvalue(TextField tf){
+        if(tf == mutationField)
+            return 100;
+        if(tf == lifespanField)
+            return 150;
         return 20;
     }
 }

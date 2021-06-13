@@ -52,7 +52,7 @@ public class EndViewController implements Initializable {
             XYChart.Series<Number, Number> toAdd = new XYChart.Series<>();
             toAdd.setName(s.name);
             int cnt = 0;
-            for(Integer y : BoardView.b.populationStats.get(s.id)) {
+            for(Integer y : BoardView.b.populationStats2.get(s.id)) {
                 XYChart.Data<Number, Number> point = new XYChart.Data<>(cnt++, y);
                 toAdd.getData().add(new XYChart.Data<>(cnt++, y));
             }

@@ -9,9 +9,9 @@ public class Species {
     static int SPECIESCREATED = 0;
     final int id;
     // DEFAULT VALUES
-    float[] geneSpeciesValue = {7, 14, 10};
+    float[] geneSpeciesValue = {7, 14, 10, 80};
     float maxHunger;
-    static int minimumLifespan = 40;
+    float mutationCoefficient;
     // GENES
     float[] geneSpeciesSum;
     // MEMBERS OF SPECIES

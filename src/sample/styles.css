@@ -25,7 +25,7 @@
 }
 
 .progress-bar{
-    -fx-accent : red;
+    -fx-accent: #ff6663;
 }
 
 .scroll-pane > .viewport {
@@ -44,6 +44,10 @@
     -fx-text-fill: #ff6663;
 }
 
+.labelTitle {
+    -fx-font-size: 16pt;
+}
+
 .axis {
     -fx-font-size: 1.4em;
     -fx-tick-label-fill: #494949;
@@ -54,7 +58,7 @@
 }
 
 .chart {
-    -fx-background-color: #c9eacd;
+    -fx-background-color: #c9eacd88;
 }
 
 .chart-title {

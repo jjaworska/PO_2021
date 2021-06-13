@@ -2,13 +2,17 @@ package sample;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
@@ -23,6 +27,7 @@ import javafx.util.Duration;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.ListIterator;
 
 
@@ -35,6 +40,7 @@ public class BoardView {
     static int M = 40;
     static Board b;
     private boolean[] isSpeciesExtinct;
+    LinkedList<LinkedList<Integer>> populationStats1;
     @FXML
     public Canvas canvas;
     public Canvas background;
@@ -68,9 +74,12 @@ public class BoardView {
     public MenuItem lakesDrying;
     @FXML
     public MenuItem cropFailure;
+    @FXML
+    public LineChart<String, Integer> runtimePopulationChart;
+    List<XYChart.Series<String, Integer>> runtimePopulationChartSeries;
+    final static int MAX_CHART_SIZE = 10;
 
-    private Timeline timeline;
-    //public GraphicsContext backgroundGc;
+    Timeline timeline;
 
     public static final Color grassColor = Color.web("86bb8c");
     public static final Color waterColor = Color.LIGHTBLUE;
@@ -80,7 +89,7 @@ public class BoardView {
         //backgroundGc = this.canvas.getGraphicsContext2D();
         this.timeline = new Timeline(new KeyFrame(Duration.millis(200), a -> {
             if (b.makeStep())
-                draw();
+                step();
             else {
                 drawEnd();
                 timeline.stop();
@@ -102,6 +111,9 @@ public class BoardView {
         isSpeciesExtinct = new boolean[speciesNum];
         for (boolean bool : isSpeciesExtinct)
             bool = false;
+        populationStats1 = new LinkedList<>();
+        for (int i = 0; i < speciesNum; i++)
+            populationStats1.add(new LinkedList<>());
         int cnt = 0;
         for (Species s : b.speciesList) {
             insideVbox.getChildren().add(s.speciesName);
@@ -113,30 +125,51 @@ public class BoardView {
         drawBackground();
         animalVbox.setVisible(false);
         canvas.setOnMouseClicked(e -> {
-            Field f = b.fields[(int)e.getY()/M][(int)e.getX()/M];
-            if(f.animal != null){
-                b.currentAnimal=f.animal;
+            Field f = b.fields[(int) e.getY() / M][(int) e.getX() / M];
+            if (f.animal != null) {
+                b.currentAnimal = f.animal;
                 animalVbox.setVisible(true);
                 speciesLabel.setText(b.currentAnimal.species.name);
-                ageLabel.setText("age: "+b.currentAnimal.age);
-                hungerBar.setProgress(b.currentAnimal.hunger/b.currentAnimal.species.maxHunger);
+                ageLabel.setText("age: " + b.currentAnimal.age);
+                hungerBar.setProgress(b.currentAnimal.hunger / b.currentAnimal.species.maxHunger);
             }
         });
-        lakeEvent.setOnAction(e->{
+        lakeEvent.setOnAction(e -> {
             b.generateLake();
             drawBackground();
         });
-        lakesDrying.setOnAction(e->{
+        lakesDrying.setOnAction(e -> {
             Events.drying(b);
             drawBackground();
         });
-        cropFailure.setOnAction(e->{
+        cropFailure.setOnAction(e -> {
             Events.cropFailure(b);
             drawBackground();
         });
 
+        runtimePopulationChartSeries = new LinkedList<>();
+        runtimePopulationChart.setCreateSymbols(false);
+        cnt = 0;
+        for (Species s : b.speciesList) {
+            runtimePopulationChartSeries.add(new XYChart.Series<String, Integer>());
+            XYChart.Series<String, Integer> newSeries = runtimePopulationChartSeries.get(cnt);
+            runtimePopulationChart.getData().add(newSeries);
+            changeColor(cnt, s.chartColor);
+            cnt++;
+        }
     }
 
+    private void changeColor(int position, String color) {
+        Platform.runLater(() -> {
+            Node nl = runtimePopulationChart.lookup(".default-color" + position + ".chart-series-line");
+            Node ns = runtimePopulationChart.lookup(".default-color" + position + ".chart-line-symbol");
+            //Node nsl = populationChart.lookup(".default-color" + position + ".chart-legend-item-symbol");
+
+            nl.setStyle("-fx-stroke: " + color + ";");
+            ns.setStyle("-fx-background-color: " + color + ", white;");
+            //nsl.setStyle("-fx-background-color: " + color + ", white;");
+        });
+    }
 
     // DRAWS GRASS, WATER, OBSTACLES AND TREES (AKA FLOWERS)
     public void drawBackground() {
@@ -171,11 +204,15 @@ public class BoardView {
             different += (b.fields[i][j].isWater != b.fields[i + di][j].isWater ? 1 : 0);
         if(j + dj >= 0 && j + dj < b.width)
             different += (b.fields[i][j].isWater != b.fields[i][j + dj].isWater ? 1 : 0);
-        if(different == 2 && b.fields[i + di][j + dj].isWater != b.fields[i][j].isWater)
-            drawCorner(gc, grassColor, i, j, which, b.fields[i][j].isWater);
+        if(different == 2) {
+            if(b.fields[i + di][j + dj].isWater != b.fields[i][j].isWater)
+                drawCorner(gc, i, j, which, b.fields[i][j].isWater);
+            else if(!b.fields[i][j].isWater)
+                drawCorner(gc, i, j, which, b.fields[i][j].isWater);
+        }
     }
 
-    public void drawCorner(GraphicsContext gc, Color color, int i, int j, int which, boolean isWater) {
+    public void drawCorner(GraphicsContext gc, int i, int j, int which, boolean isWater) {
         int m = M / 2;
         if (isWater) {
             gc.setFill(grassColor);
@@ -223,44 +260,59 @@ public class BoardView {
                 }
             }
         }
-        if(b.stepCount % 5 == 0) {
+    }
+
+    public void step() {
+        draw();
+        if (b.stepCount % 5 == 0) {
             fertilityLabel.setText("  Fertility: " + df.format(b.avgGeneValue[Animal.FertilityId]));
             metabolismSpeedLabel.setText("  Metabolism speed: " + df.format(b.avgGeneValue[Animal.MetabolismId]));
             sightLabel.setText("  Sight: " + df.format(b.avgGeneValue[Animal.SightId]));
+            int speciesCnt = 0;
             for (Species s : b.speciesList) {
-                if(!s.isExtinct()) {
-                    for(int i = 0; i < Animal.GENECOUNT; i++) {
+                populationStats1.get(speciesCnt).add(s.animalList.size());
+                if (b.stepCount > 50)
+                    populationStats1.get(speciesCnt).remove(0);
+                if (!s.isExtinct()) {
+                    for (int i = 0; i < Animal.GENECOUNT; i++) {
                         s.geneSpeciesLabel[i].setText("  " + Animal.GENENAME[i] + ": " +
                                 df.format(s.geneSpeciesSum[i] / s.animalList.size()));
                     }
-                }
-                else if(!isSpeciesExtinct[s.id]) {
-                    for(int i = 0; i < Animal.GENECOUNT; i++) {
+                } else if (!isSpeciesExtinct[s.id]) {
+                    for (int i = 0; i < Animal.GENECOUNT; i++) {
                         insideVbox.getChildren().remove(s.geneSpeciesLabel[i]);
                     }
-                    s.speciesName.setText("Species " + s.name + ": DEAD");
+                    s.speciesName.setText("Species " + s.name + ": EXTINCT");
                     s.speciesName.getStyleClass().add("labelWarning");
                     isSpeciesExtinct[s.id] = true;
                 }
                 // FILL IN populationStats
-                b.populationStats.get(s.id).add(s.animalList.size());
+                b.populationStats2.get(s.id).add(s.animalList.size());
             }
             // FILL IN geneStats
-            for(int i = 0; i < Animal.GENECOUNT; i++) {
+            for (int i = 0; i < Animal.GENECOUNT; i++) {
                 b.geneStats.get(i).add(b.avgGeneValue[i]);
             }
             // CLIP IF NECESSARY
-            if(b.geneStats.get(0).size() >= 32) {
+            if (b.geneStats.get(0).size() >= 32) {
                 for (int i = 0; i < Species.SPECIESCREATED; i++)
-                    clip(b.populationStats.get(i));
+                    clip(b.populationStats2.get(i));
                 for (int i = 0; i < Animal.GENECOUNT; i++)
                     clip(b.geneStats.get(i));
             }
+            // POPULATION_RUNTIME_CHART
+            int cnt = 0;
+            for(Species s : b.speciesList) {
+                if(runtimePopulationChartSeries.get(cnt).getData().size() > MAX_CHART_SIZE)
+                    runtimePopulationChartSeries.get(cnt).getData().remove(0);
+                runtimePopulationChartSeries.get(cnt).getData().add(new XYChart.Data<>(new Integer(b.stepCount).toString(), s.animalList.size()));
+                cnt++;
+            }
         }
-        if(b.currentAnimal != null){
-            ageLabel.setText("age: "+b.currentAnimal.age);
-            hungerBar.setProgress(b.currentAnimal.hunger/b.currentAnimal.species.maxHunger);
-        }else{
+        if (b.currentAnimal != null) {
+            ageLabel.setText("age: " + b.currentAnimal.age);
+            hungerBar.setProgress(b.currentAnimal.hunger / b.currentAnimal.species.maxHunger);
+        } else {
             animalVbox.setVisible(false);
         }
     }

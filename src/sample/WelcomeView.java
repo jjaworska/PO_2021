@@ -1,5 +1,6 @@
 package sample;
 
+import javafx.animation.Animation;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
@@ -11,7 +12,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
 import java.io.IOException;
@@ -19,14 +23,16 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class WelcomeView extends GridPane {
+public class WelcomeView extends VBox {
     // WELCOME
-    public Button send;
+    public Label title;
+    GridPane pane;
     public TextField heightField;
     public TextField widthField;
     public TextField speciesField;
     public TextField foodField;
     public TextField obstacleField;
+    public Button send;
     final int[] params = new int[5];
     public static List<Scene> scenesList;
     List<SpeciesView> svList;
@@ -114,35 +120,36 @@ public class WelcomeView extends GridPane {
         scenesList=new ArrayList<>();
         svList=new ArrayList<>();
 
-        setAlignment(Pos.CENTER);
-        setHgap(10);
-        setVgap(10);
-        setPadding(new Insets(25, 25, 25, 25));
+        pane = new GridPane();
+        pane.setAlignment(Pos.CENTER);
+        pane.setHgap(10);
+        pane.setVgap(10);
+        pane.setPadding(new Insets(0, 0, 25, 0));
 
         Label heightLabel = new Label("Height (between 4 and 100)");
-        add(heightLabel, 0, 0);
+        pane.add(heightLabel, 0, 0);
         heightField = new TextField("20");
-        add(heightField, 1, 0);
+        pane.add(heightField, 1, 0);
 
         Label widthLabel = new Label("Width (between 4 and 100)");
-        add(widthLabel, 0, 1);
+        pane.add(widthLabel, 0, 1);
         widthField = new TextField("20");
-        add(widthField, 1, 1);
+        pane.add(widthField, 1, 1);
 
         Label animalLabel = new Label("Number of species (1-5)");
-        add(animalLabel, 0, 2);
+        pane.add(animalLabel, 0, 2);
         speciesField = new TextField("2");
-        add(speciesField, 1, 2);
+        pane.add(speciesField, 1, 2);
 
         Label obstacleLabel = new Label("Number of obstacles (>=0)");
-        add(obstacleLabel, 0, 3);
+        pane.add(obstacleLabel, 0, 3);
         obstacleField = new TextField("20");
-        add(obstacleField, 1, 3);
+        pane.add(obstacleField, 1, 3);
 
         Label foodLabel = new Label("food spawning frequency  (1-10)");
-        add(foodLabel, 0, 4);
+        pane.add(foodLabel, 0, 4);
         foodField = new TextField("4");
-        add(foodField, 1, 4);
+        pane.add(foodField, 1, 4);
 
         heightField.setTextFormatter(FormatterCreator(heightField));
         widthField.setTextFormatter(FormatterCreator(widthField));
@@ -150,9 +157,8 @@ public class WelcomeView extends GridPane {
         obstacleField.setTextFormatter(FormatterCreator(obstacleField ));
         foodField.setTextFormatter(FormatterCreator(foodField ));
 
-
         send = new Button("set");
-        add(send, 0, 5);
+
         send.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
@@ -161,7 +167,7 @@ public class WelcomeView extends GridPane {
                     Label label = new Label("Textfields values cannot be null! \n");
                     label.getStyleClass().add("labelWarning");
                     label.setTextFill(Color.RED);
-                    add(label, 0, 6);
+                    pane.add(label, 0, 6);
                 } else {
                     b = new Board(params[0], params[1], params[2], params[3], params[4]);
                     int i=0;
@@ -171,7 +177,8 @@ public class WelcomeView extends GridPane {
                         b.speciesList.add(species);
                         SpeciesView sv=new SpeciesView(WelcomeView.this, species, i);
                         sv.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
-                        scenesList.add(new Scene( sv ));
+                        Scene toAdd = new Scene(sv);
+                        scenesList.add(toAdd);
                         svList.add(sv);
                         i++;
                     }
@@ -180,6 +187,13 @@ public class WelcomeView extends GridPane {
                 }
             }
         });
+
+        title = new Label("Choose board parameters");
+        title.setPadding(new Insets(0, 0, 25, 0));
+        title.getStyleClass().add("labelTitle");
+        setAlignment(Pos.CENTER);
+        setPadding(new Insets(25, 25, 25, 25));
+        getChildren().addAll(title, pane, send);
     }
     boolean getParams(final int[] params) {
         params[0] = intvalue(heightField);
@@ -205,6 +219,10 @@ public class WelcomeView extends GridPane {
                 sv.species.geneSpeciesValue[Animal.SightId]=Float.parseFloat(sv.sightField.getText());
             if(sv.metabolismField.getText()!="")
                 sv.species.geneSpeciesValue[Animal.MetabolismId]=Float.parseFloat(sv.metabolismField.getText());
+            if(sv.lifespanField.getText()!="")
+                sv.species.geneSpeciesValue[Animal.LifespanId]=Float.parseFloat(sv.lifespanField.getText());
+            if(sv.mutationField.getText()!="")
+                sv.species.mutationCoefficient=(Float.parseFloat(sv.mutationField.getText())/100);
             b.generateAnimals(intvalue(sv.numberOfAnimals), sv.species);
         }
         for(int i = 0; i < Animal.GENECOUNT; i++)
@@ -217,6 +235,14 @@ public class WelcomeView extends GridPane {
             Scene scene = new Scene(root);
             scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
             Main.primaryStage.setScene(scene);
+            scene.addEventFilter(KeyEvent.KEY_PRESSED, keyEvent -> {
+                if(keyEvent.getCode().equals(KeyCode.P)) {
+                    if (bv.timeline.getStatus().equals(Animation.Status.RUNNING))
+                        bv.timeline.stop();
+                    else
+                        bv.timeline.play();
+                }
+            });
             Main.primaryStage.show();
         } catch(IOException e){
             System.out.println("failed");

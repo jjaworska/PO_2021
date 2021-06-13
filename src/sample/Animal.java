@@ -5,14 +5,14 @@ import java.util.Random;
 public class Animal {
     // CONSTANTS
     static final int UP = 0, RIGHT = 1, DOWN = 2, LEFT = 3;
-    static final int GENECOUNT = 3;
-    static final String[] GENENAME = {"fertility", "metabolism speed", "sight"};
+    static final int GENECOUNT = 4;
+    static final String[] GENENAME = {"fertility", "metabolism speed", "sight", "maximum lifespan"};
     static final int FertilityId = 0;
     static final int MetabolismId = 1;
     static final int SightId = 2;
+    static final int LifespanId = 3;
     // RANDOMIZATION PARAMETERS
     static Random rg = new Random();
-    static float mutationCoefficient = 0.1f;
     // PROPERTIES
     Species species;
     int age = 0;
@@ -23,10 +23,11 @@ public class Animal {
     // GENES
     float[] genes;
 
-    static float mutateValue(float x) {
+    float mutateValue(float x) {
         float r = rg.nextFloat();
-        float min = x * (1.0f - mutationCoefficient);
-        float max = x * (1.0f + mutationCoefficient);
+        float min = x * (1.0f - species.mutationCoefficient);
+        if(min < 0) min = 0;
+        float max = x * (1.0f + species.mutationCoefficient);
         return min + (max - min) * r;
     }
 
@@ -49,10 +50,11 @@ public class Animal {
     public boolean step(Field f) {
         Random rg = new Random();
         age++;
-        hunger -= genes[MetabolismId];
-        if(age > species.minimumLifespan) {
+        if(!isEgg())
+            hunger -= genes[MetabolismId];
+        if(age > genes[LifespanId]) {
             // old animals die with increasing probability
-            if (rg.nextInt(species.minimumLifespan) + species.minimumLifespan <= age)
+            if (rg.nextInt((int) genes[LifespanId]) + genes[LifespanId] <= age)
                 alive = false;
         }
         if(!species.canSwim && f.isWater)
@@ -68,10 +70,10 @@ public class Animal {
     }
 
     public boolean isEgg() {
-        return age * 10 < species.minimumLifespan;
+        return age * 10 < genes[LifespanId];
     }
 
     public boolean isYoung() {
-        return !isEgg() && age * 3 < species.minimumLifespan;
+        return !isEgg() && age * 3 < genes[LifespanId];
     }
 }

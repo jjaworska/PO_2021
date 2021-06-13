@@ -18,7 +18,7 @@ public class Board {
     public int stepCount = 0;
     Field[][] fields;
     LinkedList<Species> speciesList;
-    LinkedList<LinkedList<Integer>> populationStats;
+    LinkedList<LinkedList<Integer>> populationStats2;
     LinkedList<LinkedList<Float>> geneStats;
     float[] starterGeneStats;
     Animal currentAnimal;
@@ -35,9 +35,9 @@ public class Board {
         geneStats = new LinkedList<>();
         for (int i = 0; i < Animal.GENECOUNT; i++)
             geneStats.add(new LinkedList<>());
-        populationStats = new LinkedList<>();
+        populationStats2 = new LinkedList<>();
         for (int i = 0; i < speciesCount; i++) {
-            populationStats.add(new LinkedList<>());
+            populationStats2.add(new LinkedList<>());
         }
 
         fields = new Field[height][width];
@@ -70,10 +70,10 @@ public class Board {
                     if(f.tree)
                     {
                         f.tree=false;
-                        if(x>0) fields[p.x-1][p.y].foodFrequency *= 2;
-                        if(x<height-1) fields[p.x+1][p.y].foodFrequency *= 2;
-                        if(y>0) fields[p.x][p.y-1].foodFrequency *= 2;
-                        if(y<width-1) fields[p.x][p.y+1].foodFrequency *= 2;
+                        if(p.x>0) fields[p.x-1][p.y].foodFrequency *= 2;
+                        if(p.x<height-1) fields[p.x+1][p.y].foodFrequency *= 2;
+                        if(p.y>0) fields[p.x][p.y-1].foodFrequency *= 2;
+                        if(p.y<width-1) fields[p.x][p.y+1].foodFrequency *= 2;
                     }
                     c++;
                 }
@@ -169,7 +169,7 @@ public class Board {
             Q.food = false;
         }
         if(Q.carrion>0 && a.species.carrionFeeder){
-            a.hunger = Math.max(a.hunger+50, a.species.maxHunger);
+            a.hunger = Math.max(a.hunger+20, a.species.maxHunger);
             Q.carrion=0;
         }
         Q.animal = a;
@@ -324,6 +324,7 @@ public class Board {
             for(int i = 0; i < Animal.GENECOUNT; i++) {
                 avgGeneValue[i] = geneSum[i] / animalCount;
             }
+            avgGeneValue[Animal.LifespanId] /= 9; // normalization
         }
 
         stepCount++;
