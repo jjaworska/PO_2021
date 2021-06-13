@@ -70,20 +70,28 @@ public class SpeciesView extends GridPane {
         numberOfAnimals.setTextFormatter(wv.FormatterCreator(numberOfAnimals));
         mutationField=new TextField("10");
         mutationField.setTextFormatter(wv.FormatterCreator(mutationField));
-        previous=new Button("prev");
+        previous=new Button("");
         GridPane.setHalignment(previous, HPos.RIGHT);
         previous.setOnAction(actionEvent -> Main.primaryStage.setScene(WelcomeView.scenesList.get((number+WelcomeView.scenesList.size()-1)%WelcomeView.scenesList.size())));
-        next=new Button("next");
+        next=new Button("");
         next.setOnAction(actionEvent -> Main.primaryStage.setScene(WelcomeView.scenesList.get((number+1)%WelcomeView.scenesList.size())));
-        previousimage=new Button("prevIm");
+        previousimage=new Button("");
         GridPane.setHalignment(previousimage, HPos.RIGHT);
         previousimage.setOnAction(actionEvent -> {
             decrement();
         });
-        nextimage=new Button("nextIm");
+        nextimage=new Button("");
         nextimage.setOnAction(actionEvent -> {
             increment();
         });
+        previousimage.getStyleClass().add("buttonarrow");
+        nextimage.getStyleClass().add("buttonarrow");
+        previous.getStyleClass().add("buttonarrow");
+        next.getStyleClass().add("buttonarrow");
+        previousimage.setRotate(270);
+        previous.setRotate(270);
+        nextimage.setRotate(90);
+        next.setRotate(90);
         ready=new Button("ready");
         ready.setOnAction(actionEvent -> wv.start());
         swimming= new CheckBox();

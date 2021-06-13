@@ -40,7 +40,7 @@ public class EndViewController implements Initializable {
         for(int i = 0; i < Animal.GENECOUNT; i++) {
             Text toAdd = new Text("Evolution of " + Animal.GENENAME[i] + ": " +
                     BoardView.df.format(BoardView.b.starterGeneStats[i]) + " --> " +
-                    BoardView.df.format(BoardView.b.avgGeneValue[i]) + "\n"
+                    BoardView.df.format(BoardView.b.avgGeneValue[i] * (i == Animal.LifespanId ? 9 : 1)) + "\n"
             );
             toAdd.setFill(Color.web("#494949"));
             information.getChildren().add(toAdd);

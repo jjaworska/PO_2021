@@ -24,6 +24,13 @@
     -fx-padding: 5;
 }
 
+.buttonarrow{
+    -fx-background-color: #86BB8C;
+    -fx-background-insets: 0 0 -1 0, 0;
+    -fx-padding: 0.25em;
+    -fx-shape: "M150 0 L75 200 L225 200 Z";
+}
+
 .progress-bar{
     -fx-accent: #ff6663;
 }
