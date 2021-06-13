@@ -29,7 +29,8 @@
                         <MenuButton mnemonicParsing="false" text="Events">
                           <items>
                             <MenuItem fx:id="lakeEvent" mnemonicParsing="false" text="generate lake" />
-                            <MenuItem mnemonicParsing="false" text="Action 2" />
+                            <MenuItem fx:id="lakesDrying" mnemonicParsing="false" text="lakes drying up" />
+                              <MenuItem fx:id="cropFailure" mnemonicParsing="false" text="Crop failure" />
                           </items>
                         </MenuButton>
                      </children>
@@ -40,7 +41,7 @@
                         <Insets top="12.0" />
                      </padding>
                   </HBox>
-                  <ScrollPane hbarPolicy="NEVER" prefHeight="438.0" prefWidth="278.0">
+                  <ScrollPane hbarPolicy="NEVER" prefHeight="470.0" prefWidth="278.0">
                      <content>
                         <VBox fx:id="insideVbox" prefHeight="246.0" prefWidth="278.0" spacing="10.0">
                            <children>

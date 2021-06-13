@@ -10,8 +10,8 @@ public class Field {
     boolean obstacle;
     boolean tree;
     boolean isWater;
-    boolean visited;
     int carrion;
+    boolean drying;
     Field(Random rand, int foodFrequency) {
         this.rand=rand;
         this.foodFrequency = foodFrequency;
@@ -20,7 +20,7 @@ public class Field {
         obstacle=false;
         tree = false;
         isWater=false;
-        visited=false;
+        drying=false;
         carrion =0;
     }
     boolean isFree() {

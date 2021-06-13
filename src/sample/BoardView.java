@@ -64,6 +64,10 @@ public class BoardView {
     public ProgressBar hungerBar;
     @FXML
     public MenuItem lakeEvent;
+    @FXML
+    public MenuItem lakesDrying;
+    @FXML
+    public MenuItem cropFailure;
 
     private Timeline timeline;
     //public GraphicsContext backgroundGc;
@@ -122,6 +126,15 @@ public class BoardView {
             b.generateLake();
             drawBackground();
         });
+        lakesDrying.setOnAction(e->{
+            Events.drying(b);
+            drawBackground();
+        });
+        cropFailure.setOnAction(e->{
+            Events.cropFailure(b);
+            drawBackground();
+        });
+
     }
 
 
