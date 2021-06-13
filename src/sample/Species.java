@@ -10,7 +10,7 @@ public class Species {
     final int id;
     // DEFAULT VALUES
     float[] geneSpeciesValue = {7, 14, 10};
-    int hunger;
+    float maxHunger;
     static int minimumLifespan = 40;
     // GENES
     float[] geneSpeciesSum;
@@ -33,7 +33,7 @@ public class Species {
         id = SPECIESCREATED++;
         animalList=new LinkedList<>();
         descendantsList=new LinkedList<>();
-        hunger=100;
+        maxHunger=100;
         speciesName = new Label("Species");
         geneSpeciesSum = new float[Animal.GENECOUNT];
         geneSpeciesLabel = new Label[Animal.GENECOUNT];

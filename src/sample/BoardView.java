@@ -11,6 +11,8 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
@@ -45,11 +47,23 @@ public class BoardView {
     @FXML
     public VBox vbox;
     @FXML
+    public VBox insideVbox;
+    @FXML
+    public VBox animalVbox;
+    @FXML
     public Label fertilityLabel;
     @FXML
     public Label metabolismSpeedLabel;
     @FXML
     public Label sightLabel;
+    @FXML
+    public Label speciesLabel;
+    @FXML
+    public Label ageLabel;
+    @FXML
+    public ProgressBar hungerBar;
+    @FXML
+    public MenuItem lakeEvent;
 
     private Timeline timeline;
     //public GraphicsContext backgroundGc;
@@ -86,13 +100,28 @@ public class BoardView {
             bool = false;
         int cnt = 0;
         for (Species s : b.speciesList) {
-            vbox.getChildren().add(s.speciesName);
+            insideVbox.getChildren().add(s.speciesName);
             s.speciesName.setText("Species " + s.name);
             for (int i = 0; i < 3; i++) {
-                vbox.getChildren().add(s.geneSpeciesLabel[i]);
+                insideVbox.getChildren().add(s.geneSpeciesLabel[i]);
             }
         }
         drawBackground();
+        animalVbox.setVisible(false);
+        canvas.setOnMouseClicked(e -> {
+            Field f = b.fields[(int)e.getY()/M][(int)e.getX()/M];
+            if(f.animal != null){
+                b.currentAnimal=f.animal;
+                animalVbox.setVisible(true);
+                speciesLabel.setText(b.currentAnimal.species.name);
+                ageLabel.setText("age: "+b.currentAnimal.age);
+                hungerBar.setProgress(b.currentAnimal.hunger/b.currentAnimal.species.maxHunger);
+            }
+        });
+        lakeEvent.setOnAction(e->{
+            b.generateLake();
+            drawBackground();
+        });
     }
 
 
@@ -194,7 +223,7 @@ public class BoardView {
                 }
                 else if(!isSpeciesExtinct[s.id]) {
                     for(int i = 0; i < Animal.GENECOUNT; i++) {
-                        vbox.getChildren().remove(s.geneSpeciesLabel[i]);
+                        insideVbox.getChildren().remove(s.geneSpeciesLabel[i]);
                     }
                     s.speciesName.setText("Species " + s.name + ": DEAD");
                     s.speciesName.getStyleClass().add("labelWarning");
@@ -214,6 +243,12 @@ public class BoardView {
                 for (int i = 0; i < Animal.GENECOUNT; i++)
                     clip(b.geneStats.get(i));
             }
+        }
+        if(b.currentAnimal != null){
+            ageLabel.setText("age: "+b.currentAnimal.age);
+            hungerBar.setProgress(b.currentAnimal.hunger/b.currentAnimal.species.maxHunger);
+        }else{
+            animalVbox.setVisible(false);
         }
     }
 

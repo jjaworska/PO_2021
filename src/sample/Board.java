@@ -21,6 +21,7 @@ public class Board {
     LinkedList<LinkedList<Integer>> populationStats;
     LinkedList<LinkedList<Float>> geneStats;
     float[] starterGeneStats;
+    Animal currentAnimal;
 
     Random rand;
 
@@ -42,7 +43,7 @@ public class Board {
         fields = new Field[height][width];
         for (int x = 0; x < height; x++)
             for (int y = 0; y < width; y++)
-                fields[x][y] = new Field(rand, 250 - 20*foodFrequency);
+                fields[x][y] = new Field(rand, 200 - 15*foodFrequency);
 
         speciesList = new LinkedList<>();
         freeArea=width*height-obstaclesCount;
@@ -57,22 +58,30 @@ public class Board {
         int n=0, c=0;
         Queue<Pair> Q = new ConcurrentLinkedQueue<>();
         Q.add(new Pair(x, y));
-        fields[x][y].visited=true;
         while(!Q.isEmpty() && n< freeArea && c<freeArea-6)
         {
             Pair p= Q.remove();
             int r=rand.nextInt(freeArea+4*n);
             if(r< freeArea) {
-                if (!fieldAt(p).isWater)
+                Field f = fieldAt(p);
+                if (!f.isWater)
                 {
-                    fieldAt(p).isWater = true;
+                    f.isWater = true;
+                    if(f.tree)
+                    {
+                        f.tree=false;
+                        if(x>0) fields[p.x-1][p.y].foodFrequency *= 2;
+                        if(x<height-1) fields[p.x+1][p.y].foodFrequency *= 2;
+                        if(y>0) fields[p.x][p.y-1].foodFrequency *= 2;
+                        if(y<width-1) fields[p.x][p.y+1].foodFrequency *= 2;
+                    }
                     c++;
                 }
                 n++;
-                if(p.x>0){ fields[p.x-1][p.y].visited=true; Q.add(new Pair(p.x-1, p.y)); }
-                if(p.x<height-1){ fields[p.x+1][p.y].visited=true; Q.add(new Pair(p.x+1, p.y)); }
-                if(p.y<width-1){ fields[p.x][p.y+1].visited=true; Q.add(new Pair(p.x, p.y+1)); }
-                if(p.y>0){ fields[p.x][p.y-1].visited=true; Q.add(new Pair(p.x, p.y-1)); }
+                if(p.x>0){ Q.add(new Pair(p.x-1, p.y)); }
+                if(p.x<height-1){ Q.add(new Pair(p.x+1, p.y)); }
+                if(p.y<width-1){ Q.add(new Pair(p.x, p.y+1)); }
+                if(p.y>0){ Q.add(new Pair(p.x, p.y-1)); }
             }
         }
         freeArea=freeArea-c;
@@ -160,7 +169,7 @@ public class Board {
             Q.food = false;
         }
         if(Q.carrion>0 && a.species.carrionFeeder){
-            a.hunger += 50;
+            a.hunger = Math.max(a.hunger+50, a.species.maxHunger);
             Q.carrion=0;
         }
         Q.animal = a;
@@ -220,9 +229,10 @@ public class Board {
             for (Iterator<Pair> it = species.animalList.iterator(); it.hasNext(); ) {
                 Pair p = it.next();
                 Animal a = fieldAt(p).animal;
-                if (!a.step()) {
+                if (!a.step(fieldAt(p))) {
                     fieldAt(p).animal = null;
                     fieldAt(p).carrion=1;
+                    if(a==currentAnimal) currentAnimal=null;
                     it.remove();
                     continue;
                 }

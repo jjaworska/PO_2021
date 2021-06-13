@@ -34,7 +34,7 @@ public class Animal {
         // constructs an animal from specified species
         this.species=species;
         this.direction = rg.nextInt(4);
-        this.hunger = species.hunger;
+        this.hunger = species.maxHunger;
         this.genes = species.geneSpeciesValue;
     }
 
@@ -46,7 +46,7 @@ public class Animal {
         return a;
     }
 
-    public boolean step() {
+    public boolean step(Field f) {
         Random rg = new Random();
         age++;
         hunger -= genes[MetabolismId];
@@ -55,6 +55,8 @@ public class Animal {
             if (rg.nextInt(species.minimumLifespan) + species.minimumLifespan <= age)
                 alive = false;
         }
+        if(!species.canSwim && f.isWater)
+            alive=false;
         if (hunger < 0)
             alive = false;
         return alive;

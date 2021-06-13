@@ -17,6 +17,17 @@
     -fx-padding: 5;
 }
 
+.menu-button{
+    -fx-background-color: #86BB8C;
+    -fx-background-radius: 10;
+    -fx-min-width: 60;
+    -fx-padding: 5;
+}
+
+.progress-bar{
+    -fx-accent : red;
+}
+
 .scroll-pane > .viewport {
     -fx-background-color: transparent;
 }
