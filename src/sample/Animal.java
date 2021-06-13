@@ -6,7 +6,7 @@ public class Animal {
     // CONSTANTS
     static final int UP = 0, RIGHT = 1, DOWN = 2, LEFT = 3;
     static final int GENECOUNT = 4;
-    static final String[] GENENAME = {"fertility", "metabolism speed", "sight", "maximum lifespan"};
+    static final String[] GENENAME = {"fertility", "metabolism speed", "sight", "minimum lifespan"};
     static final int FertilityId = 0;
     static final int MetabolismId = 1;
     static final int SightId = 2;
@@ -24,10 +24,11 @@ public class Animal {
     float[] genes;
 
     float mutateValue(float x) {
+        float variance = (x < 100 ? species.mutationCoefficient : species.mutationCoefficient / 2);
         float r = rg.nextFloat();
-        float min = x * (1.0f - species.mutationCoefficient);
+        float min = x * (1.0f - variance);
         if(min < 0) min = 0;
-        float max = x * (1.0f + species.mutationCoefficient);
+        float max = x * (1.0f + variance);
         return min + (max - min) * r;
     }
 
@@ -62,11 +63,6 @@ public class Animal {
         if (hunger < 0)
             alive = false;
         return alive;
-    }
-    public void addStats() {
-        for(int i = 0; i < GENECOUNT; i++) {
-            species.geneSpeciesSum[i] += this.genes[i];
-        }
     }
 
     public boolean isEgg() {

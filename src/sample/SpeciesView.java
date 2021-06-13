@@ -1,7 +1,5 @@
 package sample;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -14,18 +12,16 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 
 public class SpeciesView extends GridPane {
-    public static Board board;
     static int imagesCount = 6;
     int number;
     int image=0;
-    public Button previous, next, previousimage, nextimage, ready;
+    public Button previous, next, previousImage, nextImage, ready;
     public TextField nameField, fertilityField, sightField, metabolismField, lifespanField, mutationField, numberOfAnimals;
     public CheckBox swimming, carrionFeeder;
     public Species species;
     public Canvas canvas;
     WelcomeView wv;
-    public void increment() {
-        image=(image+1)%imagesCount;
+    public void drawImage() {
         GraphicsContext gc=this.canvas.getGraphicsContext2D();
         gc.clearRect(0, 0, 100, 100);
         gc.setFill(Color.web("FFFFFF88"));
@@ -34,15 +30,13 @@ public class SpeciesView extends GridPane {
         species.speciesImage = Images.t[image];
         species.chartColor = Images.c[image];
     }
+    public void increment() {
+        image=(image+1)%imagesCount;
+        drawImage();
+    }
     public void decrement() {
         image=(image+imagesCount-1)%imagesCount;
-        GraphicsContext gc=this.canvas.getGraphicsContext2D();
-        gc.clearRect(0, 0, 100, 100);
-        gc.setFill(Color.web("FFFFFF88"));
-        gc.fillRect(0,0, 100, 100);
-        gc.drawImage(Images.t[image], 0, 0, 100, 100);
-        species.speciesImage = Images.t[image];
-        species.chartColor = Images.c[image];
+        drawImage();
     }
     public SpeciesView(WelcomeView welcomeview, Species species, int i)
     {
@@ -75,40 +69,25 @@ public class SpeciesView extends GridPane {
         previous.setOnAction(actionEvent -> Main.primaryStage.setScene(WelcomeView.scenesList.get((number+WelcomeView.scenesList.size()-1)%WelcomeView.scenesList.size())));
         next=new Button("");
         next.setOnAction(actionEvent -> Main.primaryStage.setScene(WelcomeView.scenesList.get((number+1)%WelcomeView.scenesList.size())));
-        previousimage=new Button("");
-        GridPane.setHalignment(previousimage, HPos.RIGHT);
-        previousimage.setOnAction(actionEvent -> {
-            decrement();
-        });
-        nextimage=new Button("");
-        nextimage.setOnAction(actionEvent -> {
-            increment();
-        });
-        previousimage.getStyleClass().add("buttonarrow");
-        nextimage.getStyleClass().add("buttonarrow");
+        previousImage =new Button("");
+        GridPane.setHalignment(previousImage, HPos.RIGHT);
+        previousImage.setOnAction(actionEvent -> decrement());
+        nextImage =new Button("");
+        nextImage.setOnAction(actionEvent -> increment());
+        previousImage.getStyleClass().add("buttonarrow");
+        nextImage.getStyleClass().add("buttonarrow");
         previous.getStyleClass().add("buttonarrow");
         next.getStyleClass().add("buttonarrow");
-        previousimage.setRotate(270);
+        previousImage.setRotate(270);
         previous.setRotate(270);
-        nextimage.setRotate(90);
+        nextImage.setRotate(90);
         next.setRotate(90);
         ready=new Button("ready");
         ready.setOnAction(actionEvent -> wv.start());
         swimming= new CheckBox();
-        swimming.selectedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                species.canSwim=newValue;
-            }
-        });
+        swimming.selectedProperty().addListener((observable, oldValue, newValue) -> species.canSwim=newValue);
         carrionFeeder= new CheckBox();
-        carrionFeeder.selectedProperty().addListener(new ChangeListener<Boolean>() {
-
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                species.carrionFeeder=newValue;
-            }
-        });
+        carrionFeeder.selectedProperty().addListener((observable, oldValue, newValue) -> species.carrionFeeder=newValue);
         setHgap(10);
         setVgap(10);
         setPrefWidth(600);
@@ -116,10 +95,10 @@ public class SpeciesView extends GridPane {
         add(previous, 0, 0);
         add(nameField, 1, 0);
         add(next, 2, 0);
-        add(previousimage, 0, 2);
+        add(previousImage, 0, 2);
         add(canvas, 1, 2);
         GridPane.setHalignment(canvas, HPos.CENTER);
-        add(nextimage, 2, 2);
+        add(nextImage, 2, 2);
         add(new Label("fertility:"), 0, 3);
         add(fertilityField, 1, 3);
         add(new Label("sight:"), 0, 4);
@@ -185,8 +164,6 @@ public class SpeciesView extends GridPane {
         return 1;
     }
     float maxvalue(TextField tf){
-        if(tf == mutationField)
-            return 100;
         if(tf == lifespanField)
             return 150;
         return 20;

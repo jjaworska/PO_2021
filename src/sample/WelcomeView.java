@@ -20,8 +20,8 @@ import javafx.scene.paint.Color;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 public class WelcomeView extends VBox {
     // WELCOME
@@ -42,11 +42,6 @@ public class WelcomeView extends VBox {
         if(tf.getText().equals(""))
             return 0;
         return Integer.parseInt(tf.getText());
-    }
-    public float floatvalue (TextField tf){
-        if(tf.getText().equals(""))
-            return 0;
-        return Float.parseFloat(tf.getText());
     }
     int minvalue (TextField tf){
         if( tf==heightField ){
@@ -76,9 +71,9 @@ public class WelcomeView extends VBox {
         else if ( tf == obstacleField) return area/2-1;
         else {
             area=b.freeArea;
-            for (int i = 0; i < svList.size(); i++) {
-                if (!tf.equals(svList.get(i).numberOfAnimals)) {
-                    area = area - intvalue(svList.get(i).numberOfAnimals);
+            for (SpeciesView speciesView : svList) {
+                if (!tf.equals(speciesView.numberOfAnimals)) {
+                    area = area - intvalue(speciesView.numberOfAnimals);
                 }
             }
         }
@@ -159,7 +154,7 @@ public class WelcomeView extends VBox {
 
         send = new Button("set");
 
-        send.setOnAction(new EventHandler<ActionEvent>() {
+        send.setOnAction(new EventHandler<>() {
             @Override
             public void handle(ActionEvent actionEvent) {
                 // Data validation
@@ -176,7 +171,7 @@ public class WelcomeView extends VBox {
                         Species species=new Species();
                         b.speciesList.add(species);
                         SpeciesView sv=new SpeciesView(WelcomeView.this, species, i);
-                        sv.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
+                        sv.getStylesheets().add(Objects.requireNonNull(getClass().getResource("styles.css")).toExternalForm());
                         Scene toAdd = new Scene(sv);
                         scenesList.add(toAdd);
                         svList.add(sv);
@@ -209,20 +204,18 @@ public class WelcomeView extends VBox {
     }
     public void start()
     {
-        for(Iterator<SpeciesView> it = svList.iterator(); it.hasNext();)
-        {
-            SpeciesView sv=it.next();
-            sv.species.name=sv.nameField.getText();
-            if(sv.fertilityField.getText()!="")
-                sv.species.geneSpeciesValue[Animal.FertilityId]=Float.parseFloat(sv.fertilityField.getText());
-            if(sv.sightField.getText()!="")
-                sv.species.geneSpeciesValue[Animal.SightId]=Float.parseFloat(sv.sightField.getText());
-            if(sv.metabolismField.getText()!="")
-                sv.species.geneSpeciesValue[Animal.MetabolismId]=Float.parseFloat(sv.metabolismField.getText());
-            if(sv.lifespanField.getText()!="")
-                sv.species.geneSpeciesValue[Animal.LifespanId]=Float.parseFloat(sv.lifespanField.getText());
-            if(sv.mutationField.getText()!="")
-                sv.species.mutationCoefficient=(Float.parseFloat(sv.mutationField.getText())/100);
+        for (SpeciesView sv : svList) {
+            sv.species.name = sv.nameField.getText();
+            if (!sv.fertilityField.getText().equals(""))
+                sv.species.geneSpeciesValue[Animal.FertilityId] = Float.parseFloat(sv.fertilityField.getText());
+            if (!sv.sightField.getText().equals(""))
+                sv.species.geneSpeciesValue[Animal.SightId] = Float.parseFloat(sv.sightField.getText());
+            if (!sv.metabolismField.getText().equals(""))
+                sv.species.geneSpeciesValue[Animal.MetabolismId] = Float.parseFloat(sv.metabolismField.getText());
+            if (!sv.lifespanField.getText().equals(""))
+                sv.species.geneSpeciesValue[Animal.LifespanId] = Float.parseFloat(sv.lifespanField.getText());
+            if (!sv.mutationField.getText().equals(""))
+                sv.species.mutationCoefficient = (Float.parseFloat(sv.mutationField.getText()) / 100);
             b.generateAnimals(intvalue(sv.numberOfAnimals), sv.species);
         }
         for(int i = 0; i < Animal.GENECOUNT; i++)
@@ -233,7 +226,7 @@ public class WelcomeView extends VBox {
             BoardView bv = loader.getController();
             bv.init(b);
             Scene scene = new Scene(root);
-            scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
+            scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("styles.css")).toExternalForm());
             Main.primaryStage.setScene(scene);
             scene.addEventFilter(KeyEvent.KEY_PRESSED, keyEvent -> {
                 if(keyEvent.getCode().equals(KeyCode.P)) {

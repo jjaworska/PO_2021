@@ -32,8 +32,7 @@ public class Field {
         if(obstacle) return false;
         if(tree) return false;
         if(isWater && ! s.canSwim) return false;
-        if(carrion > 0 && !s.carrionFeeder) return false;
-        return true;
+        return carrion <= 0 || s.carrionFeeder;
     }
     void generateFood(){
         if(isFree() && !food && carrion==0){

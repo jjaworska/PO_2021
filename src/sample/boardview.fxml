@@ -52,6 +52,7 @@
                               <Label fx:id="sightLabel" text="sight" />
                               <Label fx:id="fertilityLabel" text="fertility" />
                               <Label fx:id="metabolismSpeedLabel" text="metabolismSpeed" />
+                              <Label fx:id="minimumLifespanLabel" text="minimumLifespan" />
                            </children>
                         </VBox>
                      </content>

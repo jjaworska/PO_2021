@@ -29,14 +29,16 @@ import java.text.DecimalFormat;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Objects;
 
 
 public class BoardView {
     static DecimalFormat df = new DecimalFormat("#.##");
-    static Image food_img = new Image(String.valueOf(BoardView.class.getResource("img/plant.png")));
+    static Image food_img = new Image(String.valueOf(BoardView.class.getResource("img/grass2.png")));
     static Image obstacle_img = new Image(String.valueOf(BoardView.class.getResource("img/obstacle2.png")));
     static Image dead_img = new Image(String.valueOf(BoardView.class.getResource("img/dead.png")));
     static Image tree_img = new Image(String.valueOf(BoardView.class.getResource("img/flower.png")));
+    static Image alga_img = new Image(String.valueOf(BoardView.class.getResource("img/algs.png")));
     static int M = 40;
     static Board b;
     private boolean[] isSpeciesExtinct;
@@ -63,6 +65,8 @@ public class BoardView {
     @FXML
     public Label sightLabel;
     @FXML
+    public Label minimumLifespanLabel;
+    @FXML
     public Label speciesLabel;
     @FXML
     public Label ageLabel;
@@ -84,9 +88,8 @@ public class BoardView {
     public static final Color grassColor = Color.web("86bb8c");
     public static final Color waterColor = Color.LIGHTBLUE;
 
-    public void init(Board b) {
-        this.b = b;
-        //backgroundGc = this.canvas.getGraphicsContext2D();
+    public void init(Board board) {
+        b = board;
         this.timeline = new Timeline(new KeyFrame(Duration.millis(200), a -> {
             if (b.makeStep())
                 step();
@@ -109,16 +112,13 @@ public class BoardView {
 
         int speciesNum = b.speciesList.size();
         isSpeciesExtinct = new boolean[speciesNum];
-        for (boolean bool : isSpeciesExtinct)
-            bool = false;
         populationStats1 = new LinkedList<>();
         for (int i = 0; i < speciesNum; i++)
             populationStats1.add(new LinkedList<>());
-        int cnt = 0;
         for (Species s : b.speciesList) {
             insideVbox.getChildren().add(s.speciesName);
             s.speciesName.setText("Species " + s.name);
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < Animal.GENECOUNT; i++) {
                 insideVbox.getChildren().add(s.geneSpeciesLabel[i]);
             }
         }
@@ -149,9 +149,9 @@ public class BoardView {
 
         runtimePopulationChartSeries = new LinkedList<>();
         runtimePopulationChart.setCreateSymbols(false);
-        cnt = 0;
+        int cnt = 0;
         for (Species s : b.speciesList) {
-            runtimePopulationChartSeries.add(new XYChart.Series<String, Integer>());
+            runtimePopulationChartSeries.add(new XYChart.Series<>());
             XYChart.Series<String, Integer> newSeries = runtimePopulationChartSeries.get(cnt);
             runtimePopulationChart.getData().add(newSeries);
             changeColor(cnt, s.chartColor);
@@ -163,11 +163,9 @@ public class BoardView {
         Platform.runLater(() -> {
             Node nl = runtimePopulationChart.lookup(".default-color" + position + ".chart-series-line");
             Node ns = runtimePopulationChart.lookup(".default-color" + position + ".chart-line-symbol");
-            //Node nsl = populationChart.lookup(".default-color" + position + ".chart-legend-item-symbol");
 
             nl.setStyle("-fx-stroke: " + color + ";");
             ns.setStyle("-fx-background-color: " + color + ", white;");
-            //nsl.setStyle("-fx-background-color: " + color + ", white;");
         });
     }
 
@@ -176,14 +174,11 @@ public class BoardView {
         GraphicsContext gc = background.getGraphicsContext2D();
         for (int i = 0; i < b.height; i++)
             for(int j = 0; j < b.width; j++) {
-                if (b.fields[i][j].isWater) {
+                if (b.fields[i][j].isWater)
                     gc.setFill(waterColor);
-                    gc.fillRect(M * j, M * i, M, M);
-                }
-                else {
+                else
                     gc.setFill(grassColor);
-                    gc.fillRect(M*j, M*i, M, M);
-                }
+                gc.fillRect(M*j, M*i, M, M);
                 for(int t = 0; t < 4; t++)
                     checkField(i, j, t, gc); // DEALING WITH LAKE EDGES
                 if(b.fields[i][j].obstacle) {
@@ -219,18 +214,11 @@ public class BoardView {
         } else {
             gc.setFill(waterColor);
         }
-        switch(which) {
-            case 0:
-                gc.fillRect(M * j + m, M * i, m, m);
-                break;
-            case 1:
-                gc.fillRect(M * j, M * i, m, m);
-                break;
-            case 2:
-                gc.fillRect(M * j, M * i + m, m, m);
-                break;
-            case 3:
-                gc.fillRect(M * j + m, M * i + m, m, m);
+        switch (which) {
+            case 0 -> gc.fillRect(M * j + m, M * i, m, m);
+            case 1 -> gc.fillRect(M * j, M * i, m, m);
+            case 2 -> gc.fillRect(M * j, M * i + m, m, m);
+            case 3 -> gc.fillRect(M * j + m, M * i + m, m, m);
         }
         if (isWater) {
             gc.setFill(waterColor);
@@ -253,7 +241,10 @@ public class BoardView {
                     drawAnimal(b.fields[i][j].animal, j, i);
                 }
                 else if(b.fields[i][j].food) {
-                    gc.drawImage(food_img, M*j, M*i);
+                    if(b.fields[i][j].isWater)
+                        gc.drawImage(alga_img, M*j, M*i);
+                    else
+                        gc.drawImage(food_img, M*j, M*i);
                 }
                 if(b.fields[i][j].carrion>0){
                     gc.drawImage(dead_img, M*j, M*i);
@@ -268,6 +259,7 @@ public class BoardView {
             fertilityLabel.setText("  Fertility: " + df.format(b.avgGeneValue[Animal.FertilityId]));
             metabolismSpeedLabel.setText("  Metabolism speed: " + df.format(b.avgGeneValue[Animal.MetabolismId]));
             sightLabel.setText("  Sight: " + df.format(b.avgGeneValue[Animal.SightId]));
+            minimumLifespanLabel.setText("  Minimum lifespan: " + df.format(b.avgGeneValue[Animal.LifespanId] * 9));
             int speciesCnt = 0;
             for (Species s : b.speciesList) {
                 populationStats1.get(speciesCnt).add(s.animalList.size());
@@ -305,7 +297,7 @@ public class BoardView {
             for(Species s : b.speciesList) {
                 if(runtimePopulationChartSeries.get(cnt).getData().size() > MAX_CHART_SIZE)
                     runtimePopulationChartSeries.get(cnt).getData().remove(0);
-                runtimePopulationChartSeries.get(cnt).getData().add(new XYChart.Data<>(new Integer(b.stepCount).toString(), s.animalList.size()));
+                runtimePopulationChartSeries.get(cnt).getData().add(new XYChart.Data<>(Integer.toString(b.stepCount), s.animalList.size()));
                 cnt++;
             }
         }
@@ -350,11 +342,12 @@ public class BoardView {
         try {
             Parent root = loader.load();
             Scene endScene = new Scene(root);
-            endScene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
+            endScene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("styles.css")).toExternalForm());
             Main.primaryStage.setScene(endScene);
             Main.primaryStage.show();
-        } catch (IOException e) {
+        } catch (IOException | NullPointerException e) {
             e.printStackTrace();
         }
     }
+
 }

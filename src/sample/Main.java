@@ -4,6 +4,8 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 
+import java.util.Objects;
+
 
 public class Main extends Application {
     public static Stage primaryStage;
@@ -15,7 +17,9 @@ public class Main extends Application {
         // WELCOME VIEW
         WelcomeView welcome = new WelcomeView();
         Scene welcomeScene = new Scene(welcome);
-        welcomeScene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
+        welcomeScene.getStylesheets().add(
+                Objects.requireNonNull(getClass().getResource("styles.css")).toExternalForm()
+        );
         primaryStage.setScene(welcomeScene);
 
         primaryStage.show();
